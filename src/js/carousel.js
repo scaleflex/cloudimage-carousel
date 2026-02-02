@@ -15,11 +15,13 @@ import {
 } from './constants/classes.constants'
 import { CLICK_EVENT } from './constants/events.constants'
 import { ICONS } from './constants/icons.contants'
+import { THUMBNAIL_ALIGNMENT, THUMBNAIL_FIT_MODE } from './constants/thumbnails.contants'
 import { TRANSITION_EFFECTS } from './constants/transition.constants'
 import { CarouselControls } from './controls/controls'
 import { SwipeControls } from './controls/swipe.controls'
 import { ZoomPanControls } from './controls/zoom-pan.controls'
 import { getFilenameWithoutExtension } from './utils/image.utils'
+import { validateOptions } from './utils/validation.utils'
 
 class CloudImageCarousel {
   /**
@@ -42,6 +44,9 @@ class CloudImageCarousel {
       )
     }
 
+    // Validate options before setting them
+    validateOptions(options)
+
     this.options = {
       images: options.images || [],
       autoplay: options.autoplay || false,
@@ -52,6 +57,8 @@ class CloudImageCarousel {
       showBullets: options.showBullets || false,
       showControls: options.showControls || true,
       transitionEffect: options.transitionEffect || TRANSITION_EFFECTS.FADE, // slide, fade
+      thumbnailFitMode: options.thumbnailFitMode || THUMBNAIL_FIT_MODE.CROP_FIT, // fit, crop-fit
+      thumbnailAlignment: options.thumbnailAlignment || THUMBNAIL_ALIGNMENT.SPACE_EVENLY, // left, center, right, space-evenly
       ...options,
     }
 
@@ -148,6 +155,11 @@ class CloudImageCarousel {
       this.bulletsContainer.classList.add(CI_CAROUSEL_BULLETS_CONTAINER_CLASS)
       this.container.classList.add('ci-carousel-has-bullets')
       this.bottomContainer.appendChild(this.bulletsContainer)
+    }
+
+    // Bullets container
+    if (this.options.showFilenames) {
+      this.container.classList.add('ci-carousel-has-filenames')
     }
 
     // Add containers to main view
@@ -282,6 +294,9 @@ class CloudImageCarousel {
     // Create a document fragment for better performance
     const fragment = document.createDocumentFragment()
 
+    // Set the alignment for the thumbnails container
+    this.thumbnailsContainer.style.justifyContent = this.options.thumbnailAlignment
+
     this.images.forEach((img, index) => {
       const thumb = document.createElement('div')
       thumb.classList.add('ci-carousel-thumbnail')
@@ -292,6 +307,7 @@ class CloudImageCarousel {
 
       const thumbImg = new Image()
       thumbImg.src = img.src
+      thumbImg.style.objectFit = this.options.thumbnailFitMode === THUMBNAIL_FIT_MODE.CROP_FIT ? 'cover' : 'contain'
       thumb.appendChild(thumbImg)
       fragment.appendChild(thumb)
     })

@@ -1,4 +1,3 @@
-
 <h1 align="center">
    JS carousel | Cloudimage (DMO)
 </h1>
@@ -12,11 +11,9 @@
 			src="https://scaleflex.cloudimg.io/v7/plugins/js-carousel/carousel_exemple.png">
 </p>
 
-
-
 ### Introduction:
 
-Meet `js-carousel` by Scaleflex—a minimal, no-nonsense JavaScript carousel plugin that does *exactly* what you need it to do: load fast, look slick, and play nice with performance. Designed with zero dependencies and a featherlight footprint, this carousel is tailor-made for developers and performance-obsessed teams who don’t want to trade speed for style. Whether you're running a headless CMS or optimizing for that last Lighthouse point, `js-carousel` by Scaleflex is the go-to solution.
+Meet `js-carousel` by Scaleflex—a minimal, no-nonsense JavaScript carousel plugin that does _exactly_ what you need it to do: load fast, look slick, and play nice with performance. Designed with zero dependencies and a featherlight footprint, this carousel is tailor-made for developers and performance-obsessed teams who don’t want to trade speed for style. Whether you're running a headless CMS or optimizing for that last Lighthouse point, `js-carousel` by Scaleflex is the go-to solution.
 
 `js-carousel` by Scaleflex does not bundle in more features than you'll ever use, it focuses on doing one thing exceptionally well: delivering a fast, responsive, and ultra-smooth image slider & zoomer experience with minimal setup. It’s the smart choice for frontend engineers who value UX as much as DX. Simple to integrate, easy to customize, and built for scale.
 
@@ -173,6 +170,32 @@ carousel.init()
 }
 ```
 
+### `thumbnailFitMode` (string)
+
+- **Default**: `'crop-fit'`
+- **Options**: `'crop-fit'`, `'fit'`
+- **Description**: Controls how thumbnail images are fitted within their containers
+- **Example**:
+
+```javascript
+{
+  thumbnailFitMode: 'fit' // Makes thumbnails fit within their container without cropping
+}
+```
+
+### `thumbnailAlignment` (string)
+
+- **Default**: `'space-evenly'`
+- **Options**: `'left'`, `'center'`, `'right'`, `'space-evenly'`, `'space-between'`
+- **Description**: Controls the horizontal alignment of thumbnails in the thumbnail container
+- **Example**:
+
+```javascript
+{
+  thumbnailAlignment: 'space-between' // Distributes thumbnails with equal space between them
+}
+```
+
 ## Complete Example
 
 Here's an example showing all options with their default values:
@@ -191,6 +214,8 @@ const carousel = new CloudImageCarousel('#my-carousel', {
   showControls: true,
   showBullets: false,
   transitionEffect: 'fade',
+  thumbnailFitMode: 'crop-fit',
+  thumbnailAlignment: 'space-evenly',
   images: ['path/to/image1.jpg', 'path/to/image2.jpg', 'path/to/image3.jpg'],
 })
 

@@ -4,13 +4,15 @@
   position: relative;
 }
 
+.ci-carousel-has-filenames .ci-carousel-controls {
+  top: -110px;
+}
+
 .ci-carousel-controls {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  width: 280px;
   z-index: 10;
-  border-radius: 20px;
   width: 100%;
   padding: 30px;
   box-sizing: border-box;
