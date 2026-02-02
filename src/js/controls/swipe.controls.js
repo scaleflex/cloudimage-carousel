@@ -52,7 +52,7 @@ export class SwipeControls {
       this.zoomListener = () => {
         this.isCurrentSlideZoomed ? this.disableSwipe() : this.enableSwipe()
       }
-      this.zoomPanControls.panzoomInstance.on('zoom', this.zoomListener)
+      this.zoomPanControls?.panzoomInstance?.zoom(this.zoomListener)
     }
   }
 
