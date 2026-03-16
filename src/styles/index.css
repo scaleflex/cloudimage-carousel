@@ -1,0 +1,618 @@
+/* ==========================================================================
+   js-carousel — Complete Stylesheet
+   Single consolidated CSS file (mirrors hotspot's src/styles/index.css pattern)
+   ========================================================================== */
+
+/* ==========================================================================
+   1. CSS Variables — Light theme (default)
+   All customizable values scoped to .ci-carousel container.
+   Override any variable to customize. Use .ci-carousel-theme-dark for dark mode.
+   ========================================================================== */
+
+.ci-carousel {
+  /* Container */
+  --ci-carousel-bg: #efefef;
+  --ci-carousel-border-radius: 16px;
+  --ci-carousel-shadow: 0 8px 43px rgba(0, 0, 0, 0.09);
+
+  /* Controls */
+  --ci-carousel-btn-size: 44px;
+  --ci-carousel-btn-bg: rgba(255, 255, 255, 0.9);
+  --ci-carousel-btn-color: #1a1a1a;
+  --ci-carousel-btn-hover-bg: rgba(255, 255, 255, 1);
+  --ci-carousel-btn-border: 1px solid rgba(0, 0, 0, 0.1);
+  --ci-carousel-btn-radius: 50%;
+  --ci-carousel-btn-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --ci-carousel-controls-offset: 16px;
+  --ci-carousel-controls-transition: opacity 0.3s ease-in-out;
+
+  /* Bullets */
+  --ci-carousel-bullet-size: 8px;
+  --ci-carousel-bullet-bg: rgba(0, 0, 0, 0.4);
+  --ci-carousel-bullet-active-bg: #1a1a1a;
+  --ci-carousel-bullet-gap: 15px;
+  --ci-carousel-bullets-bg: #ffffff;
+  --ci-carousel-bullets-padding: 12px 16px;
+
+  /* Thumbnails */
+  --ci-carousel-thumbnail-width: 88px;
+  --ci-carousel-thumbnail-height: 66px;
+  --ci-carousel-thumbnail-radius: 12px;
+  --ci-carousel-thumbnail-active-border: 0 0 0 2px #000000;
+  --ci-carousel-thumbnails-bg: #ffffff;
+  --ci-carousel-thumbnails-gap: 16px;
+  --ci-carousel-thumbnails-padding: 24px;
+  --ci-carousel-thumbnails-border: none;
+
+  /* Scroll hint */
+  --ci-carousel-hint-bg: rgba(0, 0, 0, 0.7);
+  --ci-carousel-hint-color: #ffffff;
+
+  /* Filename overlay */
+  --ci-carousel-filename-color: #ffffff;
+  --ci-carousel-filename-bg: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+  --ci-carousel-filename-size: 13px;
+
+  /* Focus */
+  --ci-carousel-focus-color: rgba(66, 153, 225, 0.6);
+
+  /* Transitions */
+  --ci-carousel-easing: cubic-bezier(0.16, 1, 0.3, 1);
+  --ci-carousel-transition-fast: 0.3s;
+  --ci-carousel-transition-normal: 0.5s;
+  --ci-carousel-transition-slow: 0.7s;
+
+  /* Fullscreen */
+  --ci-carousel-fullscreen-bg: rgba(0, 0, 0, 0.95);
+}
+
+/* ==========================================================================
+   2. Container
+   ========================================================================== */
+
+.ci-carousel {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--ci-carousel-bg);
+  border-radius: var(--ci-carousel-border-radius);
+  box-shadow: var(--ci-carousel-shadow);
+  overflow: hidden;
+}
+
+/* Screen reader only — visually hidden but accessible */
+.ci-carousel-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.ci-carousel-main {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--ci-carousel-bg);
+  touch-action: pan-y;
+}
+
+/* ==========================================================================
+   3. Images
+   ========================================================================== */
+
+.ci-carousel-images-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  touch-action: pan-y;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.ci-carousel-image-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+  transition: opacity var(--ci-carousel-transition-normal) var(--ci-carousel-easing);
+  opacity: 0;
+  transform-origin: center center;
+  overflow: hidden;
+}
+
+.ci-carousel-image-wrapper.active {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity var(--ci-carousel-transition-normal) var(--ci-carousel-easing),
+    transform 0s;
+}
+
+.ci-carousel-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ci-carousel-image-wrapper.zoomed {
+  cursor: grab;
+  will-change: transform;
+}
+
+.ci-carousel-image-wrapper.zoomed:active {
+  cursor: grabbing;
+}
+
+/* Dragging state — disable transition for instant feedback */
+.ci-carousel-image-wrapper.ci-carousel-dragging img {
+  transition: none !important;
+  cursor: grabbing;
+}
+
+/* ==========================================================================
+   4. Slide/Fade transitions
+   ========================================================================== */
+
+.slide {
+  transform: translateX(5%);
+  display: block !important;
+  opacity: 0;
+  transition: all var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+.slide.active {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.slide.prev {
+  transform: translateX(-5%);
+  opacity: 0;
+}
+
+.fade {
+  opacity: 0;
+  display: block !important;
+  transition: opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+.fade.active {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   5. Controls overlay
+   ========================================================================== */
+
+.ci-carousel-controls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0;
+  transition: var(--ci-carousel-controls-transition);
+}
+
+.ci-carousel-controls.controls-visible {
+  opacity: 1;
+}
+
+/* Buttons — shared base */
+.ci-carousel-btn {
+  position: absolute;
+  pointer-events: auto;
+  background: var(--ci-carousel-btn-bg);
+  color: var(--ci-carousel-btn-color);
+  border: var(--ci-carousel-btn-border);
+  width: var(--ci-carousel-btn-size);
+  height: var(--ci-carousel-btn-size);
+  cursor: pointer;
+  border-radius: var(--ci-carousel-btn-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--ci-carousel-transition-fast) var(--ci-carousel-easing);
+  font-size: 18px;
+}
+
+.ci-carousel-btn:hover {
+  background: var(--ci-carousel-btn-hover-bg);
+  box-shadow: var(--ci-carousel-btn-shadow);
+}
+
+.ci-carousel-btn:focus-visible {
+  outline: 3px solid var(--ci-carousel-focus-color);
+  outline-offset: 2px;
+}
+
+.ci-carousel-btn:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.ci-carousel-btn:active {
+  transform: scale(0.96);
+}
+
+/* Fullscreen — always top-right */
+.ci-carousel-fullscreen {
+  top: var(--ci-carousel-controls-offset);
+  right: var(--ci-carousel-controls-offset);
+}
+
+/* Autoplay pause/play — top-left */
+.ci-carousel-autoplay {
+  top: var(--ci-carousel-controls-offset);
+  left: var(--ci-carousel-controls-offset);
+}
+
+/* Nav: center position (default) — vertically centered on left/right edges */
+.ci-carousel-controls--center .ci-carousel-prev {
+  left: var(--ci-carousel-controls-offset);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.ci-carousel-controls--center .ci-carousel-next {
+  right: var(--ci-carousel-controls-offset);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.ci-carousel-controls--center .ci-carousel-prev:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.ci-carousel-controls--center .ci-carousel-next:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+/* Nav: bottom position — bottom-left/right */
+.ci-carousel-controls--bottom .ci-carousel-prev {
+  left: var(--ci-carousel-controls-offset);
+  bottom: var(--ci-carousel-controls-offset);
+}
+
+.ci-carousel-controls--bottom .ci-carousel-next {
+  right: var(--ci-carousel-controls-offset);
+  bottom: var(--ci-carousel-controls-offset);
+}
+
+/* Hoverable controls — show on hover when browser supports hover */
+@media (hover: hover) {
+  .ci-carousel:hover .ci-carousel-controls {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   6. Bullets
+   ========================================================================== */
+
+.ci-carousel-bullets {
+  display: flex;
+  gap: var(--ci-carousel-bullet-gap);
+  justify-content: center;
+  padding: var(--ci-carousel-bullets-padding);
+  background: var(--ci-carousel-bullets-bg);
+}
+
+.ci-carousel-bullet {
+  width: var(--ci-carousel-bullet-size);
+  height: var(--ci-carousel-bullet-size);
+  border-radius: 50%;
+  background: var(--ci-carousel-bullet-bg);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.4s var(--ci-carousel-easing);
+}
+
+.ci-carousel-bullet:focus-visible {
+  outline: 3px solid var(--ci-carousel-focus-color);
+  outline-offset: 2px;
+}
+
+.ci-carousel-bullet:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.ci-carousel-bullet.active {
+  background: var(--ci-carousel-bullet-active-bg);
+  transform: scale(1.3);
+}
+
+/* ==========================================================================
+   7. Thumbnails
+   ========================================================================== */
+
+.ci-carousel-thumbnails {
+  display: flex;
+  gap: var(--ci-carousel-thumbnails-gap);
+  padding: var(--ci-carousel-thumbnails-padding);
+  overflow-x: auto;
+  background: var(--ci-carousel-thumbnails-bg);
+  border-top: var(--ci-carousel-thumbnails-border);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.ci-carousel-thumbnails::-webkit-scrollbar {
+  display: none;
+}
+
+.ci-carousel-thumbnail {
+  flex-shrink: 0;
+  width: var(--ci-carousel-thumbnail-width);
+  height: var(--ci-carousel-thumbnail-height);
+  cursor: pointer;
+  opacity: 0.7;
+  transition: all 0.4s var(--ci-carousel-easing);
+  border-radius: var(--ci-carousel-thumbnail-radius);
+  overflow: hidden;
+  position: relative;
+  border: none;
+  padding: 0;
+  background: none;
+}
+
+.ci-carousel-thumbnail:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.ci-carousel-thumbnail:focus-visible {
+  outline: 3px solid var(--ci-carousel-focus-color);
+  outline-offset: 2px;
+}
+
+.ci-carousel-thumbnail:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.ci-carousel-thumbnail.active {
+  opacity: 1;
+  box-shadow: var(--ci-carousel-thumbnail-active-border);
+  transform: translateY(-2px);
+}
+
+.ci-carousel-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ==========================================================================
+   8. Filename overlay
+   ========================================================================== */
+
+.ci-carousel-filename {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 24px 20px 16px;
+  background: var(--ci-carousel-filename-bg);
+  color: var(--ci-carousel-filename-color);
+  text-align: center;
+  font-size: var(--ci-carousel-filename-size);
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.4s var(--ci-carousel-easing);
+}
+
+.ci-carousel-image-wrapper:hover .ci-carousel-filename {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   9. Scroll hint toast
+   ========================================================================== */
+
+.ci-carousel-scroll-hint {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: var(--ci-carousel-hint-bg);
+  color: var(--ci-carousel-hint-color);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 300ms ease,
+    transform 300ms ease;
+  z-index: 20;
+}
+
+.ci-carousel-scroll-hint--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ==========================================================================
+   10. Fullscreen mode
+   ========================================================================== */
+
+.ci-carousel.is-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
+  height: 100vh;
+  max-width: none;
+  margin: 0;
+  z-index: 9999;
+  background: var(--ci-carousel-fullscreen-bg);
+  border-radius: 0;
+}
+
+.ci-carousel.is-fullscreen .ci-carousel-main {
+  height: 100dvh;
+  height: 100vh;
+  background: transparent;
+}
+
+@supports (height: 100dvh) {
+  .ci-carousel.is-fullscreen {
+    height: 100dvh;
+  }
+  .ci-carousel.is-fullscreen .ci-carousel-main {
+    height: 100dvh;
+  }
+}
+
+.ci-carousel.is-fullscreen .ci-carousel-bullets {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ci-carousel.is-fullscreen .ci-carousel-bullet {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.ci-carousel.is-fullscreen .ci-carousel-bullet.active {
+  background: #ffffff;
+}
+
+/* Fullscreen controls — dark bg buttons for contrast against dark fullscreen bg */
+.ci-carousel.is-fullscreen .ci-carousel-btn {
+  background: rgba(30, 30, 30, 0.9);
+  color: #f0f0f0;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.ci-carousel.is-fullscreen .ci-carousel-btn:hover {
+  background: rgba(60, 60, 60, 0.95);
+}
+
+/* ==========================================================================
+   11. Dark theme — applied via .ci-carousel-theme-dark class
+   ========================================================================== */
+
+.ci-carousel-theme-dark {
+  /* Container */
+  --ci-carousel-bg: #1a1a1a;
+  --ci-carousel-shadow: 0 8px 43px rgba(0, 0, 0, 0.3);
+
+  /* Controls */
+  --ci-carousel-btn-bg: rgba(30, 30, 30, 0.9);
+  --ci-carousel-btn-color: #f0f0f0;
+  --ci-carousel-btn-hover-bg: rgba(50, 50, 50, 1);
+  --ci-carousel-btn-border: 1px solid rgba(255, 255, 255, 0.1);
+  --ci-carousel-btn-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+
+  /* Bullets */
+  --ci-carousel-bullet-bg: rgba(255, 255, 255, 0.4);
+  --ci-carousel-bullet-active-bg: #ffffff;
+  --ci-carousel-bullets-bg: #111111;
+
+  /* Thumbnails */
+  --ci-carousel-thumbnail-active-border: 0 0 0 2px #ffffff;
+  --ci-carousel-thumbnails-bg: #111111;
+  --ci-carousel-thumbnails-border: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* Scroll hint */
+  --ci-carousel-hint-bg: rgba(255, 255, 255, 0.15);
+  --ci-carousel-hint-color: #f0f0f0;
+
+  /* Fullscreen */
+  --ci-carousel-fullscreen-bg: rgba(0, 0, 0, 0.98);
+}
+
+/* ==========================================================================
+   12. Responsive design
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .ci-carousel {
+    --ci-carousel-btn-size: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ci-carousel {
+    --ci-carousel-btn-size: 36px;
+    --ci-carousel-controls-offset: 12px;
+  }
+
+  .ci-carousel-thumbnails {
+    padding: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .ci-carousel-theme-dark .ci-carousel-thumbnails {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .ci-carousel-has-thumbnails .ci-carousel-thumbnails {
+    padding-top: 8px;
+  }
+
+  .ci-carousel.is-fullscreen .ci-carousel-thumbnails {
+    background: rgba(0, 0, 0, 0.75);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+@media (max-width: 480px) {
+  .ci-carousel {
+    --ci-carousel-btn-size: 30px;
+    --ci-carousel-controls-offset: 8px;
+  }
+
+  .ci-carousel-thumbnails {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .ci-carousel-thumbnail {
+    width: 64px;
+    height: 48px;
+  }
+}
+
+@media screen and (max-height: 500px) {
+  .ci-carousel-main {
+    height: 100vh;
+  }
+}
+
+/* ==========================================================================
+   13. Reduced motion (accessibility)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .ci-carousel-image-wrapper,
+  .ci-carousel-image-wrapper.active,
+  .ci-carousel-controls,
+  .ci-carousel-btn,
+  .ci-carousel-bullet,
+  .ci-carousel-thumbnail,
+  .ci-carousel-filename,
+  .ci-carousel-scroll-hint,
+  .slide,
+  .fade {
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,10 +1,6 @@
-// JS files
-import { CloudImageCarousel } from './js/carousel.js'
+// Core
+import { CloudImageCarousel } from './core/carousel.js'
 
-// CSS files
-export * from './css/carousel.css'
-export * from './css/transitions.css'
-export * from './css/controls.css'
-export * from './css/responsiveness.css'
+export * from './styles/index.css'
 
 export default CloudImageCarousel

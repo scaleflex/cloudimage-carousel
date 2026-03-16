@@ -37,8 +37,6 @@
     "example": "examples"
   },
   "dependencies": {
-    "@panzoom/panzoom": "^4.6.0",
-    "hammerjs": "^2.0.8",
     "screenfull": "^6.0.2"
   }
 }

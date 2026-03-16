@@ -7,6 +7,15 @@ import {
 } from '../constants/classes.constants'
 import { createButton } from '../utils/dom.utils'
 
+const PAUSE_ICON = `<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <rect x="14" y="4" width="4" height="16" rx="1"/>
+  <rect x="6" y="4" width="4" height="16" rx="1"/>
+</svg>`
+
+const PLAY_ICON = `<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <polygon points="6 3 20 12 6 21 6 3"/>
+</svg>`
+
 export class CarouselControls {
   /**
    * @param {CloudImageCarousel} carousel
@@ -26,67 +35,82 @@ export class CarouselControls {
     if (!this.options.showControls) return
 
     // Navigation buttons
-    const prevButton = createButton(CI_CAROUSEL_PREV_CLASS, ICONS.PREV, 'Previous Image', () => {
+    this.prevButton = createButton(CI_CAROUSEL_PREV_CLASS, ICONS.PREV, 'Previous slide', () => {
       this.carousel.prev()
       this.showControls()
       this.scheduleHideControls()
     })
 
-    const nextButton = createButton(CI_CAROUSEL_NEXT_CLASS, ICONS.NEXT, 'Next Image', () => {
+    this.nextButton = createButton(CI_CAROUSEL_NEXT_CLASS, ICONS.NEXT, 'Next slide', () => {
       this.carousel.next()
       this.showControls()
       this.scheduleHideControls()
     })
 
     // Fullscreen control
-    const fullscreenButton = createButton(CI_CAROUSEL_FULLSCREEN_CLASS, ICONS.FULLSCREEN, 'Toggle Fullscreen', () => {
-      this.carousel.toggleFullscreen()
-      this.showControls()
-      this.scheduleHideControls()
-    })
+    this.fullscreenButton = createButton(
+      CI_CAROUSEL_FULLSCREEN_CLASS,
+      ICONS.FULLSCREEN,
+      'Enter fullscreen',
+      () => {
+        this.carousel.toggleFullscreen()
+        this.showControls()
+        this.scheduleHideControls()
+      },
+    )
 
     // Add buttons to container
-    this.container.appendChild(prevButton)
-    this.container.appendChild(fullscreenButton)
-    this.container.appendChild(nextButton)
+    this.container.appendChild(this.prevButton)
+    this.container.appendChild(this.nextButton)
+    this.container.appendChild(this.fullscreenButton)
+
+    // Autoplay pause/play button (WCAG 2.2.2 Pause, Stop, Hide)
+    if (this.options.autoplay) {
+      this.autoplayButton = createButton('ci-carousel-autoplay', PAUSE_ICON, 'Pause autoplay', () => {
+        this.toggleAutoplay()
+        this.showControls()
+        this.scheduleHideControls()
+      })
+      this.container.appendChild(this.autoplayButton)
+    }
 
     // Setup keyboard and touch controls
     this.setupKeyboardControls()
     this.setupTouchControls()
   }
 
-  setupTouchControls() {
-    // Show controls on touch
-    this.carousel.mainView.addEventListener('touchstart', this.handleTouchStart)
-
-    // Hide controls after 3 seconds of inactivity
-    this.carousel.mainView.addEventListener('touchend', this.handleTouchEnd)
+  toggleAutoplay() {
+    if (this.carousel.isAutoplayPaused) {
+      this.carousel.resumeAutoplay()
+      this.autoplayButton.innerHTML = PAUSE_ICON
+      this.autoplayButton.setAttribute('aria-label', 'Pause autoplay')
+    } else {
+      this.carousel.pauseAutoplay()
+      this.autoplayButton.innerHTML = PLAY_ICON
+      this.autoplayButton.setAttribute('aria-label', 'Resume autoplay')
+    }
   }
 
-  /**
-   * Handles the touch start event
-   */
+  setupTouchControls() {
+    this.carousel.mainView.addEventListener('touchstart', this.handleTouchStart, { passive: true })
+    this.carousel.mainView.addEventListener('touchend', this.handleTouchEnd, { passive: true })
+  }
+
   handleTouchStart() {
     this.showControls()
   }
 
-  /**
-   * Handles the touch end event
-   */
   handleTouchEnd() {
-    // Hide controls after 3 seconds of inactivity
     if (this.hideControlsTimeout) {
       clearTimeout(this.hideControlsTimeout)
     }
 
-    // Hide after 3 seconds
     this.hideControlsTimeout = setTimeout(() => {
       this.container.classList.remove(CI_CAROUSEL_CONTROLS_VISIBLE_CLASS)
     }, 3000)
   }
 
   showControls() {
-    // Clear any existing timeout
     if (this.hideControlsTimeout) {
       clearTimeout(this.hideControlsTimeout)
     }
@@ -99,19 +123,23 @@ export class CarouselControls {
     }
     this.hideControlsTimeout = setTimeout(() => {
       this.container.classList.remove(CI_CAROUSEL_CONTROLS_VISIBLE_CLASS)
-    }, 3000) // Hide after 3 seconds
+    }, 3000)
   }
 
   /**
-   * Handles the keyboard events
-   * @param {KeyboardEvent} e - The keyboard event
+   * Handles keyboard events (only when carousel or its children are focused)
+   * @param {KeyboardEvent} e
    */
   handleKeyDown(e) {
+    if (!this.carousel.container?.contains(document.activeElement)) return
+
     switch (e.key) {
       case KEYBOARD_KEYS.ARROW_LEFT:
+        e.preventDefault()
         this.carousel.prev()
         break
       case KEYBOARD_KEYS.ARROW_RIGHT:
+        e.preventDefault()
         this.carousel.next()
         break
       case KEYBOARD_KEYS.ESCAPE:
@@ -120,20 +148,15 @@ export class CarouselControls {
     }
   }
 
-  /**
-   * Allows the user to navigate the carousel using the keyboard
-   */
   setupKeyboardControls() {
     document.addEventListener(KEYDOWN_EVENT, this.handleKeyDown)
   }
 
   destroy() {
-    // Remove event listeners
     document.removeEventListener(KEYDOWN_EVENT, this.handleKeyDown)
     this.carousel.mainView.removeEventListener('touchstart', this.handleTouchStart)
     this.carousel.mainView.removeEventListener('touchend', this.handleTouchEnd)
 
-    // Clear timeout
     if (this.hideControlsTimeout) {
       clearTimeout(this.hideControlsTimeout)
     }

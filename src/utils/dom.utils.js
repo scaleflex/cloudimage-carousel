@@ -12,7 +12,10 @@ const createButton = (className, innerHTML, ariaLabel, onClick) => {
   button.classList.add('ci-carousel-btn', className)
   button.setAttribute('aria-label', ariaLabel)
   button.innerHTML = innerHTML
-  button.addEventListener(CLICK_EVENT, onClick)
+  button.addEventListener(CLICK_EVENT, (e) => {
+    e.stopPropagation()
+    onClick(e)
+  })
   return button
 }
 

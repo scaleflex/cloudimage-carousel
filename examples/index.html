@@ -3,22 +3,100 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CloudImage Carousel Example</title>
+    <title>CloudImage Carousel Examples</title>
     <link rel="stylesheet" href="/dist/js-carousel.min.css" />
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        margin: 0;
+        padding: 40px 20px;
+        background: #f5f5f5;
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 8px;
+        color: #1a1a1a;
+      }
+      h2 {
+        text-align: center;
+        margin: 48px 0 16px;
+        color: #333;
+        font-weight: 500;
+      }
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 32px;
+      }
+      pre {
+        max-width: 900px;
+        margin: 16px auto;
+        padding: 16px;
+        background: #1a1a1a;
+        color: #e0e0e0;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+    </style>
   </head>
   <body>
-    <div id="carousel-1"></div>
+    <h1>CloudImage Carousel</h1>
+    <p class="subtitle">Two initialization methods — JavaScript API and HTML data-attributes</p>
+
+    <!-- ================================================================
+         Example 1: JavaScript API (programmatic)
+         ================================================================ -->
+    <h2>1. JavaScript API</h2>
+    <pre><code>const carousel = new CloudImageCarousel('#carousel-js', {
+  images: ['hotel.jpg', 'birds.jpg', ...],
+  theme: 'light',
+  showBullets: true,
+  transitionEffect: 'slide',
+})
+carousel.init()</code></pre>
+
+    <div id="carousel-js"></div>
+
+    <!-- ================================================================
+         Example 2: HTML Data Attributes (declarative) + autoInit
+         ================================================================ -->
+    <h2>2. HTML Data Attributes + autoInit()</h2>
+    <pre><code>&lt;div
+  data-ci-carousel-images='["hotel.jpg", "birds.jpg", ...]'
+  data-ci-carousel-theme="dark"
+  data-ci-carousel-show-bullets="true"
+  data-ci-carousel-transition="fade"
+&gt;&lt;/div&gt;
+
+&lt;script&gt;CloudImageCarousel.autoInit()&lt;/script&gt;</code></pre>
+
+    <div
+      data-ci-carousel-images='[
+        "https://demo.cloudimg.io/v7/https://samples.scaleflex.com/hotel.jpg",
+        "https://demo.cloudimg.io/v7/https://samples.scaleflex.com/birds.jpg",
+        "https://demo.cloudimg.io/v7/https://samples.scaleflex.com/perfume.jpg",
+        "https://demo.cloudimg.io/v7/https://samples.scaleflex.com/mountains.jpg",
+        "https://demo.cloudimg.io/v7/https://samples.scaleflex.com/house.jpg",
+        "https://demo.cloudimg.io/v7/https://samples.scaleflex.com/frog.png"
+      ]'
+      data-ci-carousel-theme="dark"
+      data-ci-carousel-show-thumbnails="true"
+      data-ci-carousel-show-bullets="true"
+      data-ci-carousel-transition="fade"
+      data-ci-carousel-controls-position="center"
+    ></div>
+
     <script src="/dist/js-carousel.min.js"></script>
     <script>
-      // Initialize the carousel
-      const carousel1 = new CloudImageCarousel('#carousel-1', {
+      // Method 1: JavaScript API
+      const carousel1 = new CloudImageCarousel('#carousel-js', {
         autoplay: false,
-        autoplayInterval: 3000,
         cycle: true,
-        showFilenames: false,
         showThumbnails: true,
         showControls: true,
-        showBullets: false,
+        showBullets: true,
         transitionEffect: 'slide',
         images: [
           'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/hotel.jpg',
@@ -37,8 +115,10 @@
           'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/plate1.jpg',
         ],
       })
-
       carousel1.init()
+
+      // Method 2: Data attributes — single line auto-discovers all [data-ci-carousel-images] elements
+      CloudImageCarousel.autoInit()
     </script>
   </body>
 </html>
