@@ -1,0 +1,166 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f5f7fb;
+  color: #1a1a1a;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.app h1 {
+  text-align: center;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  margin: 0 0 8px;
+}
+
+.app .subtitle {
+  text-align: center;
+  color: #666;
+  font-size: 16px;
+  margin: 0 0 48px;
+}
+
+/* Section */
+.section {
+  margin-bottom: 56px;
+}
+
+.section h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  letter-spacing: -0.3px;
+}
+
+.section > p {
+  color: #666;
+  font-size: 14px;
+  margin: 0 0 20px;
+}
+
+/* Viewer container */
+.viewer {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+.viewer .ci-carousel {
+  max-width: 100%;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Controls bar */
+.controls-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.controls-bar button,
+.controls-bar select {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #fff;
+  color: #1a1a1a;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.controls-bar button:hover {
+  background: #f0f0f0;
+  border-color: #ccc;
+}
+
+.controls-bar button:active {
+  transform: scale(0.97);
+}
+
+.controls-bar select {
+  appearance: none;
+  padding-right: 28px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+/* Grid */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+/* Code block */
+.code-block {
+  background: #0d1117;
+  border-radius: 10px;
+  padding: 16px 20px;
+  overflow-x: auto;
+  margin: 16px 0;
+}
+
+.code-block code {
+  color: #e6edf3;
+  font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+/* Labels */
+.label {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+.label--component {
+  background: rgba(0, 212, 170, 0.12);
+  color: #00a882;
+}
+
+.label--hook {
+  background: rgba(21, 91, 205, 0.1);
+  color: #155bcd;
+}
+
+.label--ref {
+  background: rgba(210, 168, 255, 0.15);
+  color: #8b5cf6;
+}
+
+@media (max-width: 768px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .app {
+    padding: 24px 16px 48px;
+  }
+}

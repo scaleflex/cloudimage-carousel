@@ -1,5 +1,5 @@
 /* ==========================================================================
-   js-carousel — Complete Stylesheet
+   js-cloudimage-carousel — Complete Stylesheet
    Single consolidated CSS file (mirrors hotspot's src/styles/index.css pattern)
    ========================================================================== */
 
@@ -89,7 +89,7 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
 }
@@ -123,18 +123,18 @@
   width: 100%;
   height: 100%;
   visibility: hidden;
-  transition: opacity var(--ci-carousel-transition-normal) var(--ci-carousel-easing);
   opacity: 0;
   transform-origin: center center;
   overflow: hidden;
 }
 
 .ci-carousel-image-wrapper.active {
-  opacity: 1;
   visibility: visible;
-  transition:
-    opacity var(--ci-carousel-transition-normal) var(--ci-carousel-easing),
-    transform 0s;
+  opacity: 1;
+}
+
+.ci-carousel-image-wrapper.exiting {
+  visibility: visible;
 }
 
 .ci-carousel-image-wrapper img {
@@ -154,6 +154,23 @@
   cursor: grabbing;
 }
 
+/* Image error state — broken image placeholder */
+.ci-carousel-image-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ci-carousel-bg);
+}
+
+.ci-carousel-image-error img {
+  width: auto;
+  height: auto;
+  max-width: 48px;
+  max-height: 48px;
+  opacity: 0.3;
+  object-fit: initial;
+}
+
 /* Dragging state — disable transition for instant feedback */
 .ci-carousel-image-wrapper.ci-carousel-dragging img {
   transition: none !important;
@@ -161,34 +178,121 @@
 }
 
 /* ==========================================================================
-   4. Slide/Fade transitions
+   4. Directional transitions
+   Transitions ONLY on .active and .exiting — hidden slides snap with no
+   transition to prevent ghost animations when data-direction changes.
    ========================================================================== */
 
-.slide {
-  transform: translateX(5%);
-  display: block !important;
-  opacity: 0;
-  transition: all var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
-}
+/* --- Slide: horizontal directional --- */
 
 .slide.active {
   transform: translateX(0);
   opacity: 1;
+  transition: all var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
 }
 
-.slide.prev {
-  transform: translateX(-5%);
+/* Resting position — no transition, instant snap */
+[data-direction='next'] .slide:not(.active):not(.exiting) {
+  transform: translateX(100%);
   opacity: 0;
 }
 
-.fade {
+[data-direction='prev'] .slide:not(.active):not(.exiting) {
+  transform: translateX(-100%);
   opacity: 0;
-  display: block !important;
-  transition: opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
 }
+
+/* Exit — animated */
+[data-direction='next'] .slide.exiting {
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: all var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+[data-direction='prev'] .slide.exiting {
+  transform: translateX(100%);
+  opacity: 0;
+  transition: all var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+/* --- Fade: crossfade (no direction needed) --- */
 
 .fade.active {
   opacity: 1;
+  transition: opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+.fade:not(.active) {
+  opacity: 0;
+}
+
+.fade.exiting {
+  opacity: 0;
+  transition: opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+/* --- Zoom: scale + direction --- */
+
+.zoom.active {
+  transform: scale(1);
+  opacity: 1;
+  transition: all var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+[data-direction='next'] .zoom:not(.active):not(.exiting) {
+  transform: scale(0.8);
+  opacity: 0;
+}
+
+[data-direction='prev'] .zoom:not(.active):not(.exiting) {
+  transform: scale(1.2);
+  opacity: 0;
+}
+
+[data-direction='next'] .zoom.exiting {
+  transform: scale(1.2);
+  opacity: 0;
+  transition: all var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+[data-direction='prev'] .zoom.exiting {
+  transform: scale(0.8);
+  opacity: 0;
+  transition: all var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+/* --- Flip: 3D Y-axis rotation + direction --- */
+
+.flip {
+  backface-visibility: hidden;
+}
+
+.flip.active {
+  transform: perspective(1200px) rotateY(0deg);
+  opacity: 1;
+  transition: all var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+[data-direction='next'] .flip:not(.active):not(.exiting) {
+  transform: perspective(1200px) rotateY(-90deg);
+  opacity: 0;
+}
+
+[data-direction='prev'] .flip:not(.active):not(.exiting) {
+  transform: perspective(1200px) rotateY(90deg);
+  opacity: 0;
+}
+
+[data-direction='next'] .flip.exiting {
+  transform: perspective(1200px) rotateY(90deg);
+  opacity: 0;
+  transition: all var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+[data-direction='prev'] .flip.exiting {
+  transform: perspective(1200px) rotateY(-90deg);
+  opacity: 0;
+  transition: all var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
 }
 
 /* ==========================================================================
@@ -612,7 +716,9 @@
   .ci-carousel-filename,
   .ci-carousel-scroll-hint,
   .slide,
-  .fade {
+  .fade,
+  .zoom,
+  .flip {
     transition-duration: 0.01ms !important;
   }
 }

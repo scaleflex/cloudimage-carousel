@@ -1,7 +1,0 @@
-# .npmignore
-src
-examples
-build
-dist
-.babelrc
-.gitignore
