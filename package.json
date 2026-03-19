@@ -1,6 +1,6 @@
 {
   "name": "js-cloudimage-carousel",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A JavaScript carousel/image viewer plugin by CloudImage (Scaleflex)",
   "main": "dist/js-cloudimage-carousel.cjs.js",
   "module": "dist/js-cloudimage-carousel.esm.js",
