@@ -1,8 +1,7 @@
 /**
  * ARIA and screen reader utilities for the carousel.
  *
- * Mirrors the hotspot project's `src/a11y/aria.ts` pattern:
- * a shared live region with reference counting so multiple
+ * Provides a shared live region with reference counting so multiple
  * carousel instances don't create duplicate regions.
  */
 

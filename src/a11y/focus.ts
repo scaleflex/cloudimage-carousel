@@ -1,8 +1,7 @@
 /**
  * Focus management utilities for the carousel.
  *
- * Mirrors the hotspot project's `src/a11y/focus.ts` pattern:
- * focus trap for fullscreen mode, roving tabindex helpers.
+ * Provides focus trap for fullscreen mode and roving tabindex helpers.
  */
 
 const FOCUSABLE_SELECTOR = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'

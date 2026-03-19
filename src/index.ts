@@ -19,4 +19,6 @@ export type {
   TransitionEffect,
 } from './core/types'
 
+export { CloudImageCarousel }
+
 export default CloudImageCarousel

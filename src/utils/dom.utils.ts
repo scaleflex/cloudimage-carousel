@@ -19,7 +19,7 @@ export function injectStyles(css: string): void {
 
 /**
  * Typed event listener helper that returns a cleanup function.
- * Follows hotspot's `addListener` pattern for cleanup-stack integration.
+ * Returns a cleanup function for easy integration with the cleanup stack.
  */
 export function addListener<K extends keyof HTMLElementEventMap>(
   el: EventTarget,

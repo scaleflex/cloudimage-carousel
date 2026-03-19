@@ -20,7 +20,11 @@ export default defineConfig({
     cssCodeSplit: false,
     rollupOptions: {
       output: {
-        exports: 'default',
+        exports: 'named',
+        // Unwrap UMD so window.CloudImageCarousel is the class, not a namespace object.
+        // After the UMD assigns CloudImageCarousel = { CloudImageCarousel, default }, this
+        // collapses it to just the class while preserving autoInit as a static method.
+        footer: `if (typeof window !== 'undefined' && window.CloudImageCarousel && window.CloudImageCarousel.default) { window.CloudImageCarousel = window.CloudImageCarousel.default; }`,
       },
     },
   },
