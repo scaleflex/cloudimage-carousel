@@ -7,6 +7,7 @@
 /dist/*
 !/dist/js-cloudimage-carousel.min.js
 !/dist/js-cloudimage-carousel.min.js.map
+/dist-demo
 
 # testing
 /coverage

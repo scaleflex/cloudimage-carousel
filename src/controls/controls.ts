@@ -8,15 +8,6 @@ import {
 import type { ResolvedConfig } from '../core/config'
 import { createButton } from '../utils/dom.utils'
 
-const PAUSE_ICON = `<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <rect x="14" y="4" width="4" height="16" rx="1"/>
-  <rect x="6" y="4" width="4" height="16" rx="1"/>
-</svg>`
-
-const PLAY_ICON = `<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-  <polygon points="6 3 20 12 6 21 6 3"/>
-</svg>`
-
 /** Minimal interface for what CarouselControls needs from the carousel */
 interface CarouselRef {
   options: ResolvedConfig
@@ -95,7 +86,7 @@ export class CarouselControls {
 
     // Autoplay pause/play button (WCAG 2.2.2 Pause, Stop, Hide)
     if (this.options.autoplay) {
-      this.autoplayButton = createButton('ci-carousel-autoplay', PAUSE_ICON, 'Pause autoplay', () => {
+      this.autoplayButton = createButton('ci-carousel-autoplay', ICONS.PAUSE, 'Pause autoplay', () => {
         this.toggleAutoplay()
         this.showControls()
         this.scheduleHideControls()
@@ -113,11 +104,11 @@ export class CarouselControls {
 
     if (this.carousel.isAutoplayPaused) {
       this.carousel.resumeAutoplay()
-      this.autoplayButton.innerHTML = PAUSE_ICON
+      this.autoplayButton.innerHTML = ICONS.PAUSE
       this.autoplayButton.setAttribute('aria-label', 'Pause autoplay')
     } else {
       this.carousel.pauseAutoplay()
-      this.autoplayButton.innerHTML = PLAY_ICON
+      this.autoplayButton.innerHTML = ICONS.PLAY
       this.autoplayButton.setAttribute('aria-label', 'Resume autoplay')
     }
   }

@@ -26,13 +26,14 @@
     "dev:react": "vite --config config/vite.react-demo.config.ts",
     "build": "npm run build:bundle && npm run build:react && npm run typecheck:emit",
     "build:bundle": "vite build --config config/vite.config.ts",
+    "build:demo": "vite build --config config/vite.demo.config.ts",
     "build:react": "vite build --config config/vite.react.config.ts",
     "typecheck": "tsc --noEmit",
     "typecheck:emit": "tsc --project tsconfig.build.json --emitDeclarationOnly --declaration --outDir dist",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint src/ --ext .ts,.tsx",
+    "lint": "eslint src/ tests/ --ext .ts,.tsx",
     "format": "prettier --write \"**/*.{ts,js,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{ts,js,json,css,md}\""
   },
@@ -83,5 +84,6 @@
     "vite": "^5.4.11",
     "vitest": "^2.1.8"
   },
+  "sideEffects": false,
   "dependencies": {}
 }

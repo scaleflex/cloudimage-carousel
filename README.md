@@ -63,8 +63,7 @@ npm install js-cloudimage-carousel
 ### CDN
 
 ```html
-<link rel="stylesheet" href="js-cloudimage-carousel.min.css" />
-<script src="js-cloudimage-carousel.min.js"></script>
+<script src="https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-carousel/1.0.1/js-cloudimage-carousel.min.js?func=proxy"></script>
 ```
 
 ## Quick Start
@@ -269,6 +268,16 @@ Images are automatically served at optimal resolution based on container size an
 ## License
 
 [MIT](./LICENSE)
+
+---
+
+## Support
+
+If this library helped your project, consider buying me a coffee!
+
+<a href="https://buymeacoffee.com/dzmitry.stramavus">
+  <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee">
+</a>
 
 ---
 

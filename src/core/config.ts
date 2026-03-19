@@ -1,4 +1,4 @@
-import { TRANSITION_EFFECTS } from '../constants/transition.constants'
+import { TRANSITION_EFFECTS } from '../constants/transitions.constants'
 
 import type {
   CloudImageCarouselConfig,

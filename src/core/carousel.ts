@@ -1,4 +1,12 @@
 import {
+  announceToScreenReader,
+  applyContainerAria,
+  createFocusTrap,
+  createKeyboardHints,
+  createLiveRegion,
+  removeContainerAria,
+} from '../a11y'
+import {
   ACTIVE_CLASS,
   CI_CAROUSEL_BULLETS_CONTAINER_CLASS,
   CI_CAROUSEL_BULLET_CLASS,
@@ -129,11 +137,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
   private createStructure(): void {
     const container = this.container!
 
-    container.setAttribute('role', 'region')
     container.classList.add(CI_HOST_CONTAINER_CLASS)
-    container.setAttribute('aria-label', 'Image carousel')
-    container.setAttribute('aria-roledescription', 'carousel')
-
     this.applyTheme()
 
     // Main view
@@ -185,21 +189,15 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     container.appendChild(this.bottomContainer)
 
     // Live region (WCAG 4.1.3)
-    this.liveRegion = document.createElement('div')
-    this.liveRegion.setAttribute('role', 'status')
-    this.liveRegion.setAttribute('aria-live', 'polite')
-    this.liveRegion.setAttribute('aria-atomic', 'true')
-    this.liveRegion.className = 'ci-carousel-sr-only'
+    this.liveRegion = createLiveRegion()
     container.appendChild(this.liveRegion)
 
     // Keyboard hints
-    this.keyboardHints = document.createElement('div')
-    this.keyboardHints.id = `ci-carousel-help-${Date.now()}`
-    this.keyboardHints.className = 'ci-carousel-sr-only'
-    this.keyboardHints.textContent =
-      'Use arrow keys to navigate slides. Plus or equals to zoom in, minus to zoom out, zero to reset zoom. F for fullscreen. Escape to reset zoom.'
+    this.keyboardHints = createKeyboardHints()
     container.appendChild(this.keyboardHints)
-    container.setAttribute('aria-describedby', this.keyboardHints.id)
+
+    // ARIA attributes on container
+    applyContainerAria(container, this.keyboardHints.id)
   }
 
   // ==========================================================================
@@ -602,10 +600,11 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     }
 
     // Screen reader announcement
-    if (this.liveRegion) {
-      const image = this.images[this.currentIndex]
-      this.liveRegion.textContent = `Slide ${this.currentIndex + 1} of ${this.images.length}: ${image.alt}`
-    }
+    const image = this.images[this.currentIndex]
+    announceToScreenReader(
+      this.liveRegion,
+      `Slide ${this.currentIndex + 1} of ${this.images.length}: ${image.alt}`,
+    )
 
     // Reset zoom
     if (this.zoomPanControls) {
@@ -666,28 +665,8 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
   private setupFullscreenHandler(): void {
     if (!this.container) return
 
-    const trapFocus = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab' || !this.isFullscreen || !this.container) return
-
-      const focusable = this.container.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-      )
-      if (focusable.length === 0) return
-
-      const first = focusable[0]
-      const last = focusable[focusable.length - 1]
-
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault()
-        last.focus()
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault()
-        first.focus()
-      }
-    }
-
-    document.addEventListener('keydown', trapFocus)
-    this.cleanups.push(() => document.removeEventListener('keydown', trapFocus))
+    const destroyFocusTrap = createFocusTrap(this.container, () => this.isFullscreen)
+    this.cleanups.push(destroyFocusTrap)
 
     this.fullscreenControl = createFullscreenControl(this.container, {
       onChange: (fs) => {
@@ -756,10 +735,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     // Restore container (critical for React StrictMode re-mount)
     if (this.container) {
       this.container.innerHTML = ''
-      this.container.removeAttribute('role')
-      this.container.removeAttribute('aria-label')
-      this.container.removeAttribute('aria-roledescription')
-      this.container.removeAttribute('aria-describedby')
+      removeContainerAria(this.container)
       this.container.classList.remove(
         CI_HOST_CONTAINER_CLASS,
         'ci-carousel-has-controls',
