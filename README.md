@@ -269,18 +269,6 @@ Images are automatically served at optimal resolution based on container size an
 
 [MIT](./LICENSE)
 
----
-
-## Support
-
-If this library helped your project, consider buying me a coffee!
-
-<a href="https://buymeacoffee.com/dzmitry.stramavus">
-  <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me A Coffee">
-</a>
-
----
-
 <p align="center">
   Made with care by the <a href="https://www.scaleflex.com">Scaleflex</a> team
 </p>
