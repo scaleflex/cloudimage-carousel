@@ -5,15 +5,15 @@
   "main": "dist/js-cloudimage-carousel.cjs.js",
   "module": "dist/js-cloudimage-carousel.esm.js",
   "unpkg": "dist/js-cloudimage-carousel.min.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/js-cloudimage-carousel.esm.js",
       "require": "./dist/js-cloudimage-carousel.cjs.js"
     },
     "./react": {
-      "types": "./dist/react/index.d.ts",
+      "types": "./dist/types/react/index.d.ts",
       "import": "./dist/react/index.js",
       "require": "./dist/react/index.cjs"
     }

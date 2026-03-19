@@ -20,8 +20,7 @@ export default defineConfig({
     cssCodeSplit: false,
     rollupOptions: {
       output: {
-        exports: 'named',
-        assetFileNames: 'js-cloudimage-carousel.min.[ext]',
+        exports: 'default',
       },
     },
   },

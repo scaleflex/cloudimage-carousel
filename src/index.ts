@@ -2,7 +2,10 @@
 import { CloudImageCarousel } from './core/carousel'
 
 // Styles
-import './styles/index.css'
+import cssText from './styles/index.css?inline'
+import { injectStyles } from './utils/dom.utils'
+
+injectStyles(cssText)
 
 // Type re-exports
 export type {
@@ -16,8 +19,4 @@ export type {
   TransitionEffect,
 } from './core/types'
 
-// Named export for ESM
-export { CloudImageCarousel }
-
-// Default export for UMD/script tag usage
 export default CloudImageCarousel
