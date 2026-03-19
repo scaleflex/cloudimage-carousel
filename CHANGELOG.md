@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 2026-03-20
+
+### Fixed
+
+- **Type declarations path** — `package.json` types field now points to correct `dist/index.d.ts` (was pointing to non-existent `dist/types/`)
+- **UMD global** — `window.CloudImageCarousel` is now the class directly, not a namespace object (CDN `<script>` usage works as documented)
+- **Named + default exports** — both `import CloudImageCarousel` and `import { CloudImageCarousel }` now work correctly
+- **Config immutability** — `validateConfig()` returns a new object instead of mutating the input
+- **Memory leak** — slide transition fallback `setTimeout` now tracked in cleanup stack
+- **Incomplete destroy()** — `keyboardHints` and `bottomContainer` DOM references now properly nulled
+
+### Changed
+
+- Removed all `as any` type casts (5 occurrences) — replaced with proper interfaces and public getters
+- Extracted ~15 hardcoded CSS class strings into typed constants in `classes.constants.ts`
+- Extracted magic numbers (`CONTROLS_HIDE_DELAY`, `PLACEHOLDER_SVG`) into constants
+- Cached `getComputedStyle()` transition duration — computed once during `init()` instead of per slide change
+- Adopted cleanup stack pattern in `CarouselControls` (keyboard + touch listeners)
+- Used `isBrowser()` utility consistently in `cloudimage.ts` instead of inline `typeof window` checks
+- Typed fullscreen vendor prefixes (`WebkitDocument`, `WebkitHTMLElement`) instead of `as any` casts
+
+### Added
+
+- **`addListener` utility** — typed event listener helper in `dom.utils.ts` that returns a cleanup function
+- **Dedicated `a11y/` module** — extracted ARIA, focus trap, and screen reader utilities from core
+- **Live region clearing** — clears before setting new message so duplicate announcements are detected
+- **Unique keyboard hints IDs** — uses incrementing counter instead of `Date.now()`
+- **ESLint configuration** — `.eslintrc.cjs` with TypeScript-eslint recommended rules
+- **Documentation** — `CHANGELOG.md`, `SPECS.md`, `IMPLEMENTATION.md`, `docs/` folder
+- **Test coverage expansion** — 178 tests across 12 files (up from 113 across 6)
+- **GitHub Pages deployment** — workflow + `build:demo` script
+
 ## [1.0.1] - 2026-03-17
 
 ### Changed
@@ -46,5 +78,6 @@ All notable changes to this project will be documented in this file.
 - **Zero runtime dependencies**
 - **Output formats** — ESM, CJS, and UMD bundles
 
+[1.0.2]: https://github.com/scaleflex/js-cloudimage-carousel/releases/tag/v1.0.2
 [1.0.1]: https://github.com/scaleflex/js-cloudimage-carousel/releases/tag/v1.0.1
 [1.0.0]: https://github.com/scaleflex/js-cloudimage-carousel/releases/tag/v1.0.0
