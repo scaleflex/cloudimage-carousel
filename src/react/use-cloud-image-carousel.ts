@@ -45,6 +45,7 @@ export function useCloudImageCarousel(options: UseCloudImageCarouselOptions): Us
     zoomMin: options.zoomMin,
     zoomMax: options.zoomMax,
     zoomStep: options.zoomStep,
+    cloudimage: options.cloudimage,
   })
 
   useEffect(() => {
@@ -56,7 +57,7 @@ export function useCloudImageCarousel(options: UseCloudImageCarouselOptions): Us
       onSlideChange: (index: number) => optionsRef.current.onSlideChange?.(index),
     }
 
-    const carousel = new CloudImageCarousel(el, opts) as unknown as CloudImageCarouselInstance
+    const carousel = new CloudImageCarousel(el, opts)
     carousel.init()
     setInstance(carousel)
 

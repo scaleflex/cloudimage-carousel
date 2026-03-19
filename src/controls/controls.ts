@@ -1,10 +1,14 @@
-import { ICONS, KEYBOARD_KEYS, KEYDOWN_EVENT } from '../constants'
 import {
+  CI_CAROUSEL_AUTOPLAY_CLASS,
   CI_CAROUSEL_CONTROLS_VISIBLE_CLASS,
   CI_CAROUSEL_FULLSCREEN_CLASS,
   CI_CAROUSEL_NEXT_CLASS,
   CI_CAROUSEL_PREV_CLASS,
-} from '../constants/classes.constants'
+  CONTROLS_HIDE_DELAY,
+  ICONS,
+  KEYBOARD_KEYS,
+  KEYDOWN_EVENT,
+} from '../constants'
 import type { ResolvedConfig } from '../core/config'
 import { createButton } from '../utils/dom.utils'
 
@@ -32,22 +36,14 @@ export class CarouselControls {
   private carousel: CarouselRef
   private container: HTMLDivElement | null
   private options: ResolvedConfig
-  private prevButton: HTMLButtonElement | null = null
-  private nextButton: HTMLButtonElement | null = null
-  private fullscreenButton: HTMLButtonElement | null = null
   private autoplayButton: HTMLButtonElement | null = null
   private hideControlsTimeout: ReturnType<typeof setTimeout> | null = null
-  private handleKeyDown: (e: KeyboardEvent) => void
-  private handleTouchStart: () => void
-  private handleTouchEnd: () => void
+  private cleanups: (() => void)[] = []
 
   constructor(carousel: CarouselRef) {
     this.carousel = carousel
     this.container = carousel.controlsContainer
     this.options = carousel.options
-    this.handleKeyDown = this._handleKeyDown.bind(this)
-    this.handleTouchStart = this._handleTouchStart.bind(this)
-    this.handleTouchEnd = this._handleTouchEnd.bind(this)
     this.initializeControls()
   }
 
@@ -55,20 +51,20 @@ export class CarouselControls {
     if (!this.options.showControls || !this.container) return
 
     // Navigation buttons
-    this.prevButton = createButton(CI_CAROUSEL_PREV_CLASS, ICONS.PREV, 'Previous slide', () => {
+    const prevButton = createButton(CI_CAROUSEL_PREV_CLASS, ICONS.PREV, 'Previous slide', () => {
       this.carousel.prev()
       this.showControls()
       this.scheduleHideControls()
     })
 
-    this.nextButton = createButton(CI_CAROUSEL_NEXT_CLASS, ICONS.NEXT, 'Next slide', () => {
+    const nextButton = createButton(CI_CAROUSEL_NEXT_CLASS, ICONS.NEXT, 'Next slide', () => {
       this.carousel.next()
       this.showControls()
       this.scheduleHideControls()
     })
 
     // Fullscreen control
-    this.fullscreenButton = createButton(
+    const fullscreenButton = createButton(
       CI_CAROUSEL_FULLSCREEN_CLASS,
       ICONS.FULLSCREEN,
       'Enter fullscreen',
@@ -80,13 +76,13 @@ export class CarouselControls {
     )
 
     // Add buttons to container
-    this.container.appendChild(this.prevButton)
-    this.container.appendChild(this.nextButton)
-    this.container.appendChild(this.fullscreenButton)
+    this.container.appendChild(prevButton)
+    this.container.appendChild(nextButton)
+    this.container.appendChild(fullscreenButton)
 
     // Autoplay pause/play button (WCAG 2.2.2 Pause, Stop, Hide)
     if (this.options.autoplay) {
-      this.autoplayButton = createButton('ci-carousel-autoplay', ICONS.PAUSE, 'Pause autoplay', () => {
+      this.autoplayButton = createButton(CI_CAROUSEL_AUTOPLAY_CLASS, ICONS.PAUSE, 'Pause autoplay', () => {
         this.toggleAutoplay()
         this.showControls()
         this.scheduleHideControls()
@@ -94,9 +90,26 @@ export class CarouselControls {
       this.container.appendChild(this.autoplayButton)
     }
 
-    // Setup keyboard and touch controls
-    this.setupKeyboardControls()
-    this.setupTouchControls()
+    // Keyboard controls
+    const handleKeyDown = this._handleKeyDown.bind(this)
+    document.addEventListener(KEYDOWN_EVENT, handleKeyDown)
+    this.cleanups.push(() => document.removeEventListener(KEYDOWN_EVENT, handleKeyDown))
+
+    // Touch controls — show/hide on interaction
+    const handleTouchStart = () => this.showControls()
+    const handleTouchEnd = () => {
+      if (this.hideControlsTimeout) clearTimeout(this.hideControlsTimeout)
+      this.hideControlsTimeout = setTimeout(() => {
+        this.container?.classList.remove(CI_CAROUSEL_CONTROLS_VISIBLE_CLASS)
+      }, CONTROLS_HIDE_DELAY)
+    }
+
+    this.carousel.mainView?.addEventListener('touchstart', handleTouchStart, { passive: true })
+    this.carousel.mainView?.addEventListener('touchend', handleTouchEnd, { passive: true })
+    this.cleanups.push(() => {
+      this.carousel.mainView?.removeEventListener('touchstart', handleTouchStart)
+      this.carousel.mainView?.removeEventListener('touchend', handleTouchEnd)
+    })
   }
 
   private toggleAutoplay(): void {
@@ -113,25 +126,6 @@ export class CarouselControls {
     }
   }
 
-  private setupTouchControls(): void {
-    this.carousel.mainView?.addEventListener('touchstart', this.handleTouchStart, { passive: true })
-    this.carousel.mainView?.addEventListener('touchend', this.handleTouchEnd, { passive: true })
-  }
-
-  private _handleTouchStart(): void {
-    this.showControls()
-  }
-
-  private _handleTouchEnd(): void {
-    if (this.hideControlsTimeout) {
-      clearTimeout(this.hideControlsTimeout)
-    }
-
-    this.hideControlsTimeout = setTimeout(() => {
-      this.container?.classList.remove(CI_CAROUSEL_CONTROLS_VISIBLE_CLASS)
-    }, 3000)
-  }
-
   private showControls(): void {
     if (this.hideControlsTimeout) {
       clearTimeout(this.hideControlsTimeout)
@@ -145,7 +139,7 @@ export class CarouselControls {
     }
     this.hideControlsTimeout = setTimeout(() => {
       this.container?.classList.remove(CI_CAROUSEL_CONTROLS_VISIBLE_CLASS)
-    }, 3000)
+    }, CONTROLS_HIDE_DELAY)
   }
 
   private _handleKeyDown(e: KeyboardEvent): void {
@@ -190,14 +184,9 @@ export class CarouselControls {
     }
   }
 
-  private setupKeyboardControls(): void {
-    document.addEventListener(KEYDOWN_EVENT, this.handleKeyDown)
-  }
-
   destroy(): void {
-    document.removeEventListener(KEYDOWN_EVENT, this.handleKeyDown)
-    this.carousel.mainView?.removeEventListener('touchstart', this.handleTouchStart)
-    this.carousel.mainView?.removeEventListener('touchend', this.handleTouchEnd)
+    this.cleanups.forEach((fn) => fn())
+    this.cleanups = []
 
     if (this.hideControlsTimeout) {
       clearTimeout(this.hideControlsTimeout)

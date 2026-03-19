@@ -1,4 +1,10 @@
-import { CI_CAROUSEL_IMAGE_CLASS } from '../constants/classes.constants'
+import {
+  CI_CAROUSEL_DRAGGING_CLASS,
+  CI_CAROUSEL_IMAGE_CLASS,
+  CI_CAROUSEL_SCROLL_HINT_CLASS,
+  CI_CAROUSEL_SCROLL_HINT_VISIBLE_CLASS,
+  ZOOMED_CLASS,
+} from '../constants/classes.constants'
 import { DBLCLICK_EVENT, MOUSEWHEEL_EVENT } from '../constants/events.constants'
 
 const DEFAULT_MIN_ZOOM = 1
@@ -95,7 +101,7 @@ export class ZoomPanControls {
 
   private createScrollHint(): void {
     this.scrollHint = document.createElement('div')
-    this.scrollHint.className = 'ci-carousel-scroll-hint'
+    this.scrollHint.className = CI_CAROUSEL_SCROLL_HINT_CLASS
     this.scrollHint.textContent = 'Ctrl + scroll to zoom'
     this.scrollHint.setAttribute('aria-hidden', 'true')
     this.carousel.mainView!.appendChild(this.scrollHint)
@@ -103,9 +109,9 @@ export class ZoomPanControls {
 
   private showScrollHint(): void {
     if (this.scrollHintTimeout) clearTimeout(this.scrollHintTimeout)
-    this.scrollHint!.classList.add('ci-carousel-scroll-hint--visible')
+    this.scrollHint!.classList.add(CI_CAROUSEL_SCROLL_HINT_VISIBLE_CLASS)
     this.scrollHintTimeout = setTimeout(() => {
-      this.scrollHint!.classList.remove('ci-carousel-scroll-hint--visible')
+      this.scrollHint!.classList.remove(CI_CAROUSEL_SCROLL_HINT_VISIBLE_CLASS)
     }, HINT_DURATION)
   }
 
@@ -197,7 +203,7 @@ export class ZoomPanControls {
     this.dragStartY = event.clientY
     this.lastPanX = this.panX
     this.lastPanY = this.panY
-    this.currentWrapper?.classList.add('ci-carousel-dragging')
+    this.currentWrapper?.classList.add(CI_CAROUSEL_DRAGGING_CLASS)
     document.addEventListener('mousemove', this.handleMouseMove)
     document.addEventListener('mouseup', this.handleMouseUp)
     event.preventDefault()
@@ -218,7 +224,7 @@ export class ZoomPanControls {
   private _handleMouseUp(): void {
     if (!this.isDragging) return
     this.isDragging = false
-    this.currentWrapper?.classList.remove('ci-carousel-dragging')
+    this.currentWrapper?.classList.remove(CI_CAROUSEL_DRAGGING_CLASS)
     document.removeEventListener('mousemove', this.handleMouseMove)
     document.removeEventListener('mouseup', this.handleMouseUp)
   }
@@ -337,10 +343,10 @@ export class ZoomPanControls {
     if (!this.currentWrapper) return
 
     if (this.zoom > this.minZoom) {
-      this.currentWrapper.classList.add('zoomed')
+      this.currentWrapper.classList.add(ZOOMED_CLASS)
       this.imagesContainer.style.touchAction = 'none'
     } else {
-      this.currentWrapper.classList.remove('zoomed')
+      this.currentWrapper.classList.remove(ZOOMED_CLASS)
       this.imagesContainer.style.touchAction = ''
     }
   }

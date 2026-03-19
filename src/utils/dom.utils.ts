@@ -18,6 +18,20 @@ export function injectStyles(css: string): void {
 }
 
 /**
+ * Typed event listener helper that returns a cleanup function.
+ * Follows hotspot's `addListener` pattern for cleanup-stack integration.
+ */
+export function addListener<K extends keyof HTMLElementEventMap>(
+  el: EventTarget,
+  event: K,
+  handler: (e: HTMLElementEventMap[K]) => void,
+  options?: boolean | AddEventListenerOptions,
+): () => void {
+  el.addEventListener(event, handler as EventListener, options)
+  return () => el.removeEventListener(event, handler as EventListener, options)
+}
+
+/**
  * Creates a button element with a click handler.
  */
 export const createButton = (

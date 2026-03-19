@@ -1,4 +1,5 @@
-export * from './events.constants'
+export * from './classes.constants'
 export * from './controls.constants'
-export * from './transitions.constants'
+export * from './events.constants'
 export * from './icons.contants'
+export * from './transitions.constants'

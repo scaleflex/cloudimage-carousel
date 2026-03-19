@@ -63,70 +63,70 @@ describe('validateConfig', () => {
 
   it('fixes non-array images', () => {
     ;(config as any).images = 'not-an-array'
-    validateConfig(config)
-    expect(config.images).toEqual([])
+    const result = validateConfig(config)
+    expect(result.images).toEqual([])
     expect(console.warn).toHaveBeenCalled()
   })
 
   it('fixes invalid transitionEffect', () => {
     ;(config as any).transitionEffect = 'invalid'
-    validateConfig(config)
-    expect(config.transitionEffect).toBe(DEFAULT_CONFIG.transitionEffect)
+    const result = validateConfig(config)
+    expect(result.transitionEffect).toBe(DEFAULT_CONFIG.transitionEffect)
   })
 
   it('fixes invalid controlsPosition', () => {
     ;(config as any).controlsPosition = 'left'
-    validateConfig(config)
-    expect(config.controlsPosition).toBe(DEFAULT_CONFIG.controlsPosition)
+    const result = validateConfig(config)
+    expect(result.controlsPosition).toBe(DEFAULT_CONFIG.controlsPosition)
   })
 
   it('fixes invalid theme', () => {
     ;(config as any).theme = 'neon'
-    validateConfig(config)
-    expect(config.theme).toBe(DEFAULT_CONFIG.theme)
+    const result = validateConfig(config)
+    expect(result.theme).toBe(DEFAULT_CONFIG.theme)
   })
 
   it('fixes autoplayInterval below 100', () => {
     config.autoplayInterval = 50
-    validateConfig(config)
-    expect(config.autoplayInterval).toBe(3000)
+    const result = validateConfig(config)
+    expect(result.autoplayInterval).toBe(3000)
   })
 
   it('fixes non-number autoplayInterval', () => {
     ;(config as any).autoplayInterval = 'fast'
-    validateConfig(config)
-    expect(config.autoplayInterval).toBe(3000)
+    const result = validateConfig(config)
+    expect(result.autoplayInterval).toBe(3000)
   })
 
   it('fixes zoomMin below 0.1', () => {
     config.zoomMin = 0
-    validateConfig(config)
-    expect(config.zoomMin).toBe(1)
+    const result = validateConfig(config)
+    expect(result.zoomMin).toBe(1)
   })
 
   it('fixes zoomMax less than zoomMin', () => {
     config.zoomMin = 2
     config.zoomMax = 1
-    validateConfig(config)
-    expect(config.zoomMax).toBe(4)
+    const result = validateConfig(config)
+    expect(result.zoomMax).toBe(4)
   })
 
   it('fixes non-positive zoomStep', () => {
     config.zoomStep = 0
-    validateConfig(config)
-    expect(config.zoomStep).toBe(0.3)
+    const result = validateConfig(config)
+    expect(result.zoomStep).toBe(0.3)
   })
 
   it('removes cloudimage config without token', () => {
     ;(config as any).cloudimage = { apiVersion: 'v7' }
-    validateConfig(config)
-    expect((config as any).cloudimage).toBeUndefined()
+    const result = validateConfig(config)
+    expect(result.cloudimage).toBeUndefined()
   })
 
   it('keeps cloudimage config with token', () => {
     ;(config as any).cloudimage = { token: 'demo', apiVersion: 'v7' }
-    validateConfig(config)
-    expect((config as any).cloudimage).toEqual({ token: 'demo', apiVersion: 'v7' })
+    const result = validateConfig(config)
+    expect(result.cloudimage).toEqual({ token: 'demo', apiVersion: 'v7' })
   })
 })
 

@@ -164,59 +164,62 @@ export function mergeConfig(
 }
 
 /**
- * Validates the resolved config. Warns and fixes invalid values in place.
+ * Validates the resolved config. Returns a new corrected object — never mutates input.
  */
-export function validateConfig(config: ResolvedConfig): void {
-  if (!Array.isArray(config.images)) {
+export function validateConfig(config: ResolvedConfig): ResolvedConfig {
+  const result = { ...config }
+
+  if (!Array.isArray(result.images)) {
     console.warn('[CloudImageCarousel] "images" must be an array')
-    config.images = []
+    result.images = []
   }
 
   const validTransitions = Object.values(TRANSITION_EFFECTS)
-  if (!validTransitions.includes(config.transitionEffect)) {
+  if (!validTransitions.includes(result.transitionEffect)) {
     console.warn(
-      `[CloudImageCarousel] Invalid transitionEffect "${config.transitionEffect}". Using "${DEFAULT_CONFIG.transitionEffect}".`,
+      `[CloudImageCarousel] Invalid transitionEffect "${result.transitionEffect}". Using "${DEFAULT_CONFIG.transitionEffect}".`,
     )
-    config.transitionEffect = DEFAULT_CONFIG.transitionEffect
+    result.transitionEffect = DEFAULT_CONFIG.transitionEffect
   }
 
-  if (!(['center', 'bottom'] as ControlsPosition[]).includes(config.controlsPosition)) {
+  if (!(['center', 'bottom'] as ControlsPosition[]).includes(result.controlsPosition)) {
     console.warn(
-      `[CloudImageCarousel] Invalid controlsPosition "${config.controlsPosition}". Using "${DEFAULT_CONFIG.controlsPosition}".`,
+      `[CloudImageCarousel] Invalid controlsPosition "${result.controlsPosition}". Using "${DEFAULT_CONFIG.controlsPosition}".`,
     )
-    config.controlsPosition = DEFAULT_CONFIG.controlsPosition
+    result.controlsPosition = DEFAULT_CONFIG.controlsPosition
   }
 
-  if (!(['light', 'dark'] as Theme[]).includes(config.theme)) {
-    console.warn(`[CloudImageCarousel] Invalid theme "${config.theme}". Using "${DEFAULT_CONFIG.theme}".`)
-    config.theme = DEFAULT_CONFIG.theme
+  if (!(['light', 'dark'] as Theme[]).includes(result.theme)) {
+    console.warn(`[CloudImageCarousel] Invalid theme "${result.theme}". Using "${DEFAULT_CONFIG.theme}".`)
+    result.theme = DEFAULT_CONFIG.theme
   }
 
-  if (typeof config.autoplayInterval !== 'number' || config.autoplayInterval < 100) {
+  if (typeof result.autoplayInterval !== 'number' || result.autoplayInterval < 100) {
     console.warn('[CloudImageCarousel] autoplayInterval must be a number >= 100. Using 3000.')
-    config.autoplayInterval = 3000
+    result.autoplayInterval = 3000
   }
 
-  if (typeof config.zoomMin !== 'number' || config.zoomMin < 0.1) {
+  if (typeof result.zoomMin !== 'number' || result.zoomMin < 0.1) {
     console.warn('[CloudImageCarousel] zoomMin must be a number >= 0.1. Using 1.')
-    config.zoomMin = 1
+    result.zoomMin = 1
   }
 
-  if (typeof config.zoomMax !== 'number' || config.zoomMax < config.zoomMin) {
-    console.warn(`[CloudImageCarousel] zoomMax must be a number >= zoomMin (${config.zoomMin}). Using 4.`)
-    config.zoomMax = 4
+  if (typeof result.zoomMax !== 'number' || result.zoomMax < result.zoomMin) {
+    console.warn(`[CloudImageCarousel] zoomMax must be a number >= zoomMin (${result.zoomMin}). Using 4.`)
+    result.zoomMax = 4
   }
 
-  if (typeof config.zoomStep !== 'number' || config.zoomStep <= 0) {
+  if (typeof result.zoomStep !== 'number' || result.zoomStep <= 0) {
     console.warn('[CloudImageCarousel] zoomStep must be a positive number. Using 0.3.')
-    config.zoomStep = 0.3
+    result.zoomStep = 0.3
   }
 
-  const ci = (config as ResolvedConfig & { cloudimage?: CloudimageConfig }).cloudimage
-  if (ci && !ci.token) {
+  if (result.cloudimage && !result.cloudimage.token) {
     console.warn('[CloudImageCarousel] cloudimage config provided without "token". Cloudimage CDN will be disabled.')
-    ;(config as ResolvedConfig & { cloudimage?: CloudimageConfig }).cloudimage = undefined
+    result.cloudimage = undefined
   }
+
+  return result
 }
 
 export { DEFAULT_CONFIG, DATA_ATTR_MAP }

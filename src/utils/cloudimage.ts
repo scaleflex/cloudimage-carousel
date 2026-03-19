@@ -1,4 +1,5 @@
 import type { CloudimageConfig } from '../core/types'
+import { isBrowser } from './dom.utils'
 
 const DEFAULT_DOMAIN = 'cloudimg.io'
 const DEFAULT_API_VERSION = 'v7'
@@ -49,7 +50,7 @@ export function transformImageSrc(
   containerWidth: number,
   zoomLevel: number = 1,
 ): string {
-  const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1
+  const dpr = isBrowser() ? window.devicePixelRatio || 1 : 1
   return buildCloudimageUrl(src, config, containerWidth, zoomLevel, dpr)
 }
 
@@ -71,7 +72,7 @@ export function createContainerResizeHandler(
       const containerWidth = entry.contentRect.width
       if (containerWidth === 0) continue
 
-      const dpr = typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1
+      const dpr = isBrowser() ? window.devicePixelRatio || 1 : 1
       const newWidth = getOptimalWidth(containerWidth, dpr, getZoom(), limitFactor)
 
       if (newWidth !== lastRequestedWidth) {

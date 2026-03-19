@@ -8,19 +8,29 @@ import {
 } from '../a11y'
 import {
   ACTIVE_CLASS,
+  CI_CAROUSEL_BOTTOM_CONTAINER_CLASS,
   CI_CAROUSEL_BULLETS_CONTAINER_CLASS,
   CI_CAROUSEL_BULLET_CLASS,
   CI_CAROUSEL_CONTROLS_CLASS,
+  CI_CAROUSEL_FILENAME_CLASS,
   CI_CAROUSEL_FULLSCREEN_CLASS,
-  CI_CAROUSEL_IMAGES_CONTAINER_CLASS,
+  CI_CAROUSEL_HAS_BULLETS_CLASS,
+  CI_CAROUSEL_HAS_CONTROLS_CLASS,
+  CI_CAROUSEL_HAS_THUMBNAILS_CLASS,
   CI_CAROUSEL_IMAGE_CLASS,
+  CI_CAROUSEL_IMAGE_ERROR_CLASS,
   CI_CAROUSEL_IMAGE_WRAPPER_CLASS,
+  CI_CAROUSEL_IMAGES_CONTAINER_CLASS,
+  CI_CAROUSEL_IS_FULLSCREEN_CLASS,
   CI_CAROUSEL_MAIN_CLASS,
+  CI_CAROUSEL_THEME_DARK_CLASS,
+  CI_CAROUSEL_THUMBNAIL_CLASS,
   CI_CAROUSEL_THUMBNAILS_CLASS,
   CI_HOST_CONTAINER_CLASS,
+  EXITING_CLASS,
 } from '../constants/classes.constants'
 import { CLICK_EVENT } from '../constants/events.constants'
-import { KEYBOARD_KEYS } from '../constants/controls.constants'
+import { KEYBOARD_KEYS, PLACEHOLDER_SVG } from '../constants/controls.constants'
 import { ICONS } from '../constants/icons.contants'
 import { CarouselControls } from '../controls/controls'
 import { SwipeControls } from '../controls/swipe.controls'
@@ -47,9 +57,9 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
   isFullscreen: boolean = false
   isAutoplayPaused: boolean = false
 
-  // --- Internal state ---
-  private container: HTMLElement | null
-  private options: ResolvedConfig
+  // --- Internal state (public for sub-module access via CarouselRef interfaces) ---
+  container: HTMLElement | null
+  options: ResolvedConfig
   private images: NormalizedImage[] = []
   private isDestroyed: boolean = false
   private cleanups: (() => void)[] = []
@@ -68,6 +78,9 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
   controls: CarouselControls | null = null
   zoomPanControls: ZoomPanControls | null = null
   private swipeControls: SwipeControls | null = null
+
+  // --- Cached values ---
+  private transitionDurationMs: number = 700
 
   // --- Cloudimage CDN ---
   private cloudimageEnabled: boolean = false
@@ -98,7 +111,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     // Config: defaults → data attributes → JS options (immutable merge)
     const dataConfig = parseDataAttributes(this.container)
     this.options = mergeConfig(dataConfig, options)
-    validateConfig(this.options)
+    this.options = validateConfig(this.options)
   }
 
   // ==========================================================================
@@ -109,13 +122,14 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     this.cloudimageEnabled = !!(this.options.cloudimage?.token)
 
     this.createStructure()
+    this.cacheTransitionDuration()
     this.loadImages(this.options.images)
 
     if (this.options.showControls) {
-      this.controls = new CarouselControls(this as any)
+      this.controls = new CarouselControls(this)
       this.cleanups.push(() => this.controls?.destroy())
 
-      this.zoomPanControls = new ZoomPanControls(this as any, {
+      this.zoomPanControls = new ZoomPanControls(this, {
         minZoom: this.options.zoomMin,
         maxZoom: this.options.zoomMax,
         zoomStep: this.options.zoomStep,
@@ -123,7 +137,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
       this.cleanups.push(() => this.zoomPanControls?.destroy())
     }
 
-    this.swipeControls = new SwipeControls(this as any)
+    this.swipeControls = new SwipeControls(this)
     this.cleanups.push(() => this.swipeControls?.destroy())
 
     this.setupFullscreenHandler()
@@ -158,7 +172,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
       this.controlsContainer = document.createElement('div')
       this.controlsContainer.classList.add(CI_CAROUSEL_CONTROLS_CLASS)
       this.controlsContainer.classList.add(`ci-carousel-controls--${this.options.controlsPosition}`)
-      container.classList.add('ci-carousel-has-controls')
+      container.classList.add(CI_CAROUSEL_HAS_CONTROLS_CLASS)
       this.mainView.appendChild(this.controlsContainer)
     }
 
@@ -166,10 +180,10 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
 
     // Bottom container
     this.bottomContainer = document.createElement('div')
-    this.bottomContainer.classList.add('ci-carousel-bottom-container')
+    this.bottomContainer.classList.add(CI_CAROUSEL_BOTTOM_CONTAINER_CLASS)
 
     if (this.options.showThumbnails) {
-      container.classList.add('ci-carousel-has-thumbnails')
+      container.classList.add(CI_CAROUSEL_HAS_THUMBNAILS_CLASS)
       this.thumbnailsContainer = document.createElement('div')
       this.thumbnailsContainer.classList.add(CI_CAROUSEL_THUMBNAILS_CLASS)
       this.thumbnailsContainer.setAttribute('role', 'group')
@@ -182,7 +196,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
       this.bulletsContainer.classList.add(CI_CAROUSEL_BULLETS_CONTAINER_CLASS)
       this.bulletsContainer.setAttribute('role', 'group')
       this.bulletsContainer.setAttribute('aria-label', 'Slide indicators')
-      container.classList.add('ci-carousel-has-bullets')
+      container.classList.add(CI_CAROUSEL_HAS_BULLETS_CLASS)
       this.bottomContainer.appendChild(this.bulletsContainer)
     }
 
@@ -198,6 +212,13 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
 
     // ARIA attributes on container
     applyContainerAria(container, this.keyboardHints.id)
+  }
+
+  /** Cache the CSS transition duration once to avoid getComputedStyle() per slide change. */
+  private cacheTransitionDuration(): void {
+    if (!this.container) return
+    const raw = getComputedStyle(this.container).getPropertyValue('--ci-carousel-transition-slow') || '0.7'
+    this.transitionDurationMs = parseFloat(raw) * 1000
   }
 
   // ==========================================================================
@@ -233,11 +254,11 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
       img.classList.add(CI_CAROUSEL_IMAGE_CLASS)
       img.alt = image.alt
       img.dataset.src = image.src
-      img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"%3E%3C/svg%3E'
+      img.src = PLACEHOLDER_SVG
       img.loading = 'lazy'
 
       img.onerror = () => {
-        wrapper.classList.add('ci-carousel-image-error')
+        wrapper.classList.add(CI_CAROUSEL_IMAGE_ERROR_CLASS)
         img.alt = `Failed to load: ${image.alt}`
         this.options.onError?.(image.src, index)
       }
@@ -246,7 +267,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
 
       if (this.options.showFilenames) {
         const filename = document.createElement('div')
-        filename.classList.add('ci-carousel-filename')
+        filename.classList.add(CI_CAROUSEL_FILENAME_CLASS)
         filename.textContent = getFilenameWithoutExtension(image.src)
         wrapper.appendChild(filename)
       }
@@ -340,7 +361,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
   private setupCloudimageResize(): void {
     if (!this.cloudimageEnabled || !this.options.cloudimage || !this.mainView) return
 
-    const getZoom = () => (this.zoomPanControls as any)?.zoom ?? 1
+    const getZoom = () => this.zoomPanControls?.getScale() ?? 1
 
     const { destroy } = createContainerResizeHandler(
       this.mainView,
@@ -366,7 +387,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
   private refreshCloudimageUrls(): void {
     if (!this.cloudimageEnabled || !this.options.cloudimage || !this.imagesContainer) return
 
-    const zoomLevel = (this.zoomPanControls as any)?.zoom ?? 1
+    const zoomLevel = this.zoomPanControls?.getScale() ?? 1
     const containerWidth = this.mainView?.clientWidth ?? 0
     if (containerWidth === 0) return
 
@@ -404,7 +425,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
 
     this.images.forEach((img, index) => {
       const thumb = document.createElement('button')
-      thumb.classList.add('ci-carousel-thumbnail')
+      thumb.classList.add(CI_CAROUSEL_THUMBNAIL_CLASS)
       thumb.dataset.index = String(index)
       thumb.setAttribute('aria-label', `Go to slide ${index + 1}: ${img.alt}`)
       thumb.setAttribute('aria-pressed', index === this.currentIndex ? 'true' : 'false')
@@ -426,7 +447,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
 
     if (!this.thumbnailClickHandler) {
       this.thumbnailClickHandler = (e: Event) => {
-        const thumb = (e.target as HTMLElement).closest('.ci-carousel-thumbnail') as HTMLElement | null
+        const thumb = (e.target as HTMLElement).closest(`.${CI_CAROUSEL_THUMBNAIL_CLASS}`) as HTMLElement | null
         if (thumb?.dataset.index) {
           this.goToSlide(parseInt(thumb.dataset.index, 10))
         }
@@ -553,7 +574,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
 
     // 2. Exit old slide
     prevSlide.classList.remove(ACTIVE_CLASS)
-    prevSlide.classList.add('exiting')
+    prevSlide.classList.add(EXITING_CLASS)
 
     // 3. Force reflow so entering slide registers start position
     currentSlide.getBoundingClientRect()
@@ -562,12 +583,10 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     currentSlide.classList.add(ACTIVE_CLASS)
 
     // 5. Clean up exiting after transition
-    const cleanup = () => prevSlide.classList.remove('exiting')
+    const cleanup = () => prevSlide.classList.remove(EXITING_CLASS)
     prevSlide.addEventListener('transitionend', cleanup, { once: true })
-    const transitionMs = parseFloat(
-      getComputedStyle(this.container!).getPropertyValue('--ci-carousel-transition-slow') || '0.7',
-    ) * 1000
-    setTimeout(cleanup, transitionMs + 100)
+    const fallbackId = setTimeout(cleanup, this.transitionDurationMs + 100)
+    this.cleanups.push(() => clearTimeout(fallbackId))
 
     // Update thumbnails
     if (this.options.showThumbnails && this.thumbnailsContainer) {
@@ -647,9 +666,9 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
   applyTheme(): void {
     if (!this.container) return
     if (this.options.theme === 'dark') {
-      this.container.classList.add('ci-carousel-theme-dark')
+      this.container.classList.add(CI_CAROUSEL_THEME_DARK_CLASS)
     } else {
-      this.container.classList.remove('ci-carousel-theme-dark')
+      this.container.classList.remove(CI_CAROUSEL_THEME_DARK_CLASS)
     }
   }
 
@@ -738,11 +757,11 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
       removeContainerAria(this.container)
       this.container.classList.remove(
         CI_HOST_CONTAINER_CLASS,
-        'ci-carousel-has-controls',
-        'ci-carousel-has-thumbnails',
-        'ci-carousel-has-bullets',
-        'ci-carousel-theme-dark',
-        'is-fullscreen',
+        CI_CAROUSEL_HAS_CONTROLS_CLASS,
+        CI_CAROUSEL_HAS_THUMBNAILS_CLASS,
+        CI_CAROUSEL_HAS_BULLETS_CLASS,
+        CI_CAROUSEL_THEME_DARK_CLASS,
+        CI_CAROUSEL_IS_FULLSCREEN_CLASS,
       )
     }
 
@@ -753,7 +772,9 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     this.thumbnailsContainer = null
     this.controlsContainer = null
     this.bulletsContainer = null
+    this.bottomContainer = null
     this.liveRegion = null
+    this.keyboardHints = null
   }
 
   // ==========================================================================

@@ -10,18 +10,32 @@ export interface FullscreenControl {
   destroy: () => void
 }
 
+/** Vendor-prefixed fullscreen interfaces for Safari/older WebKit. */
+interface WebkitDocument extends Document {
+  webkitFullscreenEnabled?: boolean
+  webkitFullscreenElement?: Element | null
+  webkitExitFullscreen?: () => void
+}
+
+interface WebkitHTMLElement extends HTMLElement {
+  webkitRequestFullscreen?: () => void
+}
+
 function isFullscreenEnabled(): boolean {
-  return !!(document.fullscreenEnabled || (document as any).webkitFullscreenEnabled)
+  const doc = document as WebkitDocument
+  return !!(doc.fullscreenEnabled || doc.webkitFullscreenEnabled)
 }
 
 function getFullscreenElement(): Element | null {
-  return document.fullscreenElement || (document as any).webkitFullscreenElement || null
+  const doc = document as WebkitDocument
+  return doc.fullscreenElement || doc.webkitFullscreenElement || null
 }
 
 function requestFullscreen(el: HTMLElement): Promise<void> {
   if (el.requestFullscreen) return el.requestFullscreen()
-  if ((el as any).webkitRequestFullscreen) {
-    ;(el as any).webkitRequestFullscreen()
+  const webkitEl = el as WebkitHTMLElement
+  if (webkitEl.webkitRequestFullscreen) {
+    webkitEl.webkitRequestFullscreen()
     return Promise.resolve()
   }
   return Promise.reject(new Error('Fullscreen API not supported'))
@@ -29,12 +43,15 @@ function requestFullscreen(el: HTMLElement): Promise<void> {
 
 function exitFullscreen(): Promise<void> {
   if (document.exitFullscreen) return document.exitFullscreen()
-  if ((document as any).webkitExitFullscreen) {
-    ;(document as any).webkitExitFullscreen()
+  const doc = document as WebkitDocument
+  if (doc.webkitExitFullscreen) {
+    doc.webkitExitFullscreen()
     return Promise.resolve()
   }
   return Promise.reject(new Error('Fullscreen API not supported'))
 }
+
+import { CI_CAROUSEL_IS_FULLSCREEN_CLASS } from '../constants/classes.constants'
 
 /** Create a fullscreen control for the given container */
 export function createFullscreenControl(
@@ -51,7 +68,7 @@ export function createFullscreenControl(
 
   function syncState(): void {
     const fs = isActive()
-    container.classList.toggle('is-fullscreen', fs)
+    container.classList.toggle(CI_CAROUSEL_IS_FULLSCREEN_CLASS, fs)
     options.onChange?.(fs)
   }
 
@@ -86,7 +103,7 @@ export function createFullscreenControl(
     if (isActive()) {
       exitFullscreen().catch(() => {})
     }
-    container.classList.remove('is-fullscreen')
+    container.classList.remove(CI_CAROUSEL_IS_FULLSCREEN_CLASS)
     cleanups.forEach((fn) => fn())
     cleanups.length = 0
   }
