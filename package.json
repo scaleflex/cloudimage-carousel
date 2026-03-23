@@ -1,6 +1,6 @@
 {
   "name": "js-cloudimage-carousel",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A JavaScript carousel/image viewer plugin by CloudImage (Scaleflex)",
   "main": "dist/js-cloudimage-carousel.cjs.js",
   "module": "dist/js-cloudimage-carousel.esm.js",
@@ -40,10 +40,20 @@
   "keywords": [
     "carousel",
     "slider",
+    "slideshow",
+    "gallery",
+    "image-gallery",
+    "image-viewer",
     "javascript",
+    "typescript",
     "react",
     "cloudimage",
-    "scaleflex"
+    "scaleflex",
+    "lightweight",
+    "touch",
+    "swipe",
+    "zoom",
+    "responsive"
   ],
   "author": "CloudImage by Scaleflex",
   "license": "MIT",
