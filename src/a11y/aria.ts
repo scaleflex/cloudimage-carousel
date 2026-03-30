@@ -48,7 +48,7 @@ export function applyContainerAria(container: HTMLElement, keyboardHintsId: stri
   container.setAttribute('aria-describedby', keyboardHintsId)
 }
 
-/** Remove ARIA attributes from the carousel container on destroy. */
+
 export function removeContainerAria(container: HTMLElement): void {
   container.removeAttribute('role')
   container.removeAttribute('aria-label')
