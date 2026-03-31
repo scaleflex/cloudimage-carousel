@@ -45,6 +45,7 @@ export function useCloudImageCarousel(options: UseCloudImageCarouselOptions): Us
     zoomMin: options.zoomMin,
     zoomMax: options.zoomMax,
     zoomStep: options.zoomStep,
+    aspectRatio: options.aspectRatio,
     cloudimage: options.cloudimage,
   })
 

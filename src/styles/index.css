@@ -15,13 +15,14 @@
   --ci-carousel-border-radius: 16px;
   --ci-carousel-shadow: 0 8px 43px rgba(0, 0, 0, 0.09);
 
-  /* Controls */
-  --ci-carousel-btn-size: 44px;
+  /* Controls — aligned with @cloudimage/hotspot design tokens */
+  --ci-carousel-btn-size: 36px;
+  --ci-carousel-btn-icon-size: 18px;
   --ci-carousel-btn-bg: rgba(255, 255, 255, 0.9);
-  --ci-carousel-btn-color: #1a1a1a;
-  --ci-carousel-btn-hover-bg: rgba(255, 255, 255, 1);
-  --ci-carousel-btn-border: 1px solid rgba(0, 0, 0, 0.1);
-  --ci-carousel-btn-radius: 50%;
+  --ci-carousel-btn-color: #333333;
+  --ci-carousel-btn-hover-bg: rgba(230, 230, 230, 0.95);
+  --ci-carousel-btn-border: none;
+  --ci-carousel-btn-radius: 8px;
   --ci-carousel-btn-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   --ci-carousel-controls-offset: 16px;
   --ci-carousel-controls-transition: opacity 0.3s ease-in-out;
@@ -54,7 +55,7 @@
   --ci-carousel-filename-size: 13px;
 
   /* Focus */
-  --ci-carousel-focus-color: rgba(66, 153, 225, 0.6);
+  --ci-carousel-focus-color: #4A90D9;
 
   /* Transitions */
   --ci-carousel-easing: cubic-bezier(0.16, 1, 0.3, 1);
@@ -97,7 +98,7 @@
 .ci-carousel-main {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: var(--ci-carousel-aspect-ratio, 16 / 9);
   overflow: hidden;
   background: var(--ci-carousel-bg);
   touch-action: pan-y;
@@ -315,9 +316,8 @@
   opacity: 1;
 }
 
-/* Buttons — shared base */
+/* Buttons — shared base (aligned with @cloudimage/hotspot) */
 .ci-carousel-btn {
-  position: absolute;
   pointer-events: auto;
   background: var(--ci-carousel-btn-bg);
   color: var(--ci-carousel-btn-color);
@@ -329,13 +329,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--ci-carousel-transition-fast) var(--ci-carousel-easing);
-  font-size: 18px;
+  box-shadow: var(--ci-carousel-btn-shadow);
+  transition: background 150ms ease;
+  padding: 0;
+}
+
+.ci-carousel-btn svg {
+  width: var(--ci-carousel-btn-icon-size);
+  height: var(--ci-carousel-btn-icon-size);
 }
 
 .ci-carousel-btn:hover {
   background: var(--ci-carousel-btn-hover-bg);
-  box-shadow: var(--ci-carousel-btn-shadow);
 }
 
 .ci-carousel-btn:focus-visible {
@@ -351,16 +356,41 @@
   transform: scale(0.96);
 }
 
-/* Fullscreen — always top-right */
-.ci-carousel-fullscreen {
-  top: var(--ci-carousel-controls-offset);
-  right: var(--ci-carousel-controls-offset);
+/* Nav buttons — positioned absolutely */
+.ci-carousel-prev,
+.ci-carousel-next {
+  position: absolute;
 }
 
-/* Autoplay pause/play — top-left */
-.ci-carousel-autoplay {
+/* Utility group — top-right cluster for autoplay + fullscreen
+   Mirrors @cloudimage/hotspot zoom-controls pattern:
+   container has bg + overflow:hidden, buttons are transparent */
+.ci-carousel-utility-group {
+  position: absolute;
   top: var(--ci-carousel-controls-offset);
-  left: var(--ci-carousel-controls-offset);
+  right: var(--ci-carousel-controls-offset);
+  display: flex;
+  gap: 2px;
+  pointer-events: auto;
+  background: var(--ci-carousel-btn-bg);
+  border-radius: var(--ci-carousel-btn-radius);
+  overflow: hidden;
+  box-shadow: var(--ci-carousel-btn-shadow);
+  z-index: 10;
+}
+
+.ci-carousel-utility-group .ci-carousel-btn {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.ci-carousel-utility-group .ci-carousel-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.ci-carousel-utility-group .ci-carousel-btn:focus-visible {
+  outline-offset: -3px;
 }
 
 /* Nav: center position (default) — vertically centered on left/right edges */
@@ -603,11 +633,22 @@
 .ci-carousel.is-fullscreen .ci-carousel-btn {
   background: rgba(30, 30, 30, 0.9);
   color: #f0f0f0;
-  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .ci-carousel.is-fullscreen .ci-carousel-btn:hover {
   background: rgba(60, 60, 60, 0.95);
+}
+
+.ci-carousel.is-fullscreen .ci-carousel-utility-group {
+  background: rgba(30, 30, 30, 0.9);
+}
+
+.ci-carousel.is-fullscreen .ci-carousel-utility-group .ci-carousel-btn {
+  background: transparent;
+}
+
+.ci-carousel.is-fullscreen .ci-carousel-utility-group .ci-carousel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* ==========================================================================
@@ -622,8 +663,8 @@
   /* Controls */
   --ci-carousel-btn-bg: rgba(30, 30, 30, 0.9);
   --ci-carousel-btn-color: #f0f0f0;
-  --ci-carousel-btn-hover-bg: rgba(50, 50, 50, 1);
-  --ci-carousel-btn-border: 1px solid rgba(255, 255, 255, 0.1);
+  --ci-carousel-btn-hover-bg: rgba(60, 60, 60, 0.95);
+  --ci-carousel-btn-border: none;
   --ci-carousel-btn-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 
   /* Bullets */
@@ -644,19 +685,18 @@
   --ci-carousel-fullscreen-bg: rgba(0, 0, 0, 0.98);
 }
 
+.ci-carousel-theme-dark .ci-carousel-utility-group .ci-carousel-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 /* ==========================================================================
    12. Responsive design
    ========================================================================== */
 
-@media (max-width: 1024px) {
-  .ci-carousel {
-    --ci-carousel-btn-size: 40px;
-  }
-}
-
 @media (max-width: 768px) {
   .ci-carousel {
-    --ci-carousel-btn-size: 36px;
+    --ci-carousel-btn-size: 32px;
+    --ci-carousel-btn-icon-size: 16px;
     --ci-carousel-controls-offset: 12px;
   }
 
@@ -681,7 +721,8 @@
 
 @media (max-width: 480px) {
   .ci-carousel {
-    --ci-carousel-btn-size: 30px;
+    --ci-carousel-btn-size: 28px;
+    --ci-carousel-btn-icon-size: 14px;
     --ci-carousel-controls-offset: 8px;
   }
 
@@ -711,6 +752,7 @@
   .ci-carousel-image-wrapper.active,
   .ci-carousel-controls,
   .ci-carousel-btn,
+  .ci-carousel-utility-group,
   .ci-carousel-bullet,
   .ci-carousel-thumbnail,
   .ci-carousel-filename,

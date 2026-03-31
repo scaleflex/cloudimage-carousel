@@ -4,6 +4,7 @@ import {
   CI_CAROUSEL_FULLSCREEN_CLASS,
   CI_CAROUSEL_NEXT_CLASS,
   CI_CAROUSEL_PREV_CLASS,
+  CI_CAROUSEL_UTILITY_GROUP_CLASS,
   CONTROLS_HIDE_DELAY,
   ICONS,
   KEYBOARD_KEYS,
@@ -75,10 +76,13 @@ export class CarouselControls {
       },
     )
 
-    // Add buttons to container
+    // Add nav buttons to container
     this.container.appendChild(prevButton)
     this.container.appendChild(nextButton)
-    this.container.appendChild(fullscreenButton)
+
+    // Utility group (top-right) — autoplay + fullscreen grouped together
+    const utilityGroup = document.createElement('div')
+    utilityGroup.classList.add(CI_CAROUSEL_UTILITY_GROUP_CLASS)
 
     // Autoplay pause/play button (WCAG 2.2.2 Pause, Stop, Hide)
     if (this.options.autoplay) {
@@ -87,8 +91,11 @@ export class CarouselControls {
         this.showControls()
         this.scheduleHideControls()
       })
-      this.container.appendChild(this.autoplayButton)
+      utilityGroup.appendChild(this.autoplayButton)
     }
+
+    utilityGroup.appendChild(fullscreenButton)
+    this.container.appendChild(utilityGroup)
 
     // Keyboard controls
     const handleKeyDown = this._handleKeyDown.bind(this)

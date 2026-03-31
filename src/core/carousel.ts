@@ -157,6 +157,10 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     // Main view
     this.mainView = document.createElement('div')
     this.mainView.classList.add(CI_CAROUSEL_MAIN_CLASS)
+    const normalizedRatio = this.options.aspectRatio.replace(/\s/g, '')
+    if (normalizedRatio !== '16/9') {
+      this.mainView.style.setProperty('--ci-carousel-aspect-ratio', this.options.aspectRatio)
+    }
 
     // Images container
     this.imagesContainer = document.createElement('div')

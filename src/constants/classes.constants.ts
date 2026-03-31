@@ -20,6 +20,7 @@ export const CI_CAROUSEL_DRAGGING_CLASS = 'ci-carousel-dragging' as const
 export const CI_CAROUSEL_PREV_CLASS = 'ci-carousel-prev' as const
 export const CI_CAROUSEL_NEXT_CLASS = 'ci-carousel-next' as const
 export const CI_CAROUSEL_FULLSCREEN_CLASS = 'ci-carousel-fullscreen' as const
+export const CI_CAROUSEL_UTILITY_GROUP_CLASS = 'ci-carousel-utility-group' as const
 export const CI_CAROUSEL_CONTROLS_VISIBLE_CLASS = 'controls-visible' as const
 
 // State classes

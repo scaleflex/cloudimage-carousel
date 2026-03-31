@@ -25,6 +25,7 @@ export interface ResolvedConfig {
   controlsPosition: ControlsPosition
   theme: Theme
   transitionEffect: TransitionEffect
+  aspectRatio: string
   zoomMin: number
   zoomMax: number
   zoomStep: number
@@ -49,6 +50,7 @@ const DEFAULT_CONFIG: ResolvedConfig = {
   controlsPosition: 'center',
   theme: 'light',
   transitionEffect: TRANSITION_EFFECTS.FADE as TransitionEffect,
+  aspectRatio: '16/9',
   zoomMin: 1,
   zoomMax: 4,
   zoomStep: 0.3,
@@ -78,6 +80,7 @@ const DATA_ATTR_MAP: Record<string, DataAttrMapping> = {
   'data-ci-carousel-controls-position': { key: 'controlsPosition', type: 'string' },
   'data-ci-carousel-theme': { key: 'theme', type: 'string' },
   'data-ci-carousel-transition': { key: 'transitionEffect', type: 'string' },
+  'data-ci-carousel-aspect-ratio': { key: 'aspectRatio', type: 'string' },
   'data-ci-carousel-zoom-min': { key: 'zoomMin', type: 'number' },
   'data-ci-carousel-zoom-max': { key: 'zoomMax', type: 'number' },
   'data-ci-carousel-zoom-step': { key: 'zoomStep', type: 'number' },
@@ -212,6 +215,15 @@ export function validateConfig(config: ResolvedConfig): ResolvedConfig {
   if (typeof result.zoomStep !== 'number' || result.zoomStep <= 0) {
     console.warn('[CloudImageCarousel] zoomStep must be a positive number. Using 0.3.')
     result.zoomStep = 0.3
+  }
+
+  if (typeof result.aspectRatio !== 'string' || !/^\d+\s*\/\s*\d+$/.test(result.aspectRatio)) {
+    if (result.aspectRatio !== DEFAULT_CONFIG.aspectRatio) {
+      console.warn(
+        `[CloudImageCarousel] Invalid aspectRatio "${result.aspectRatio}". Expected format "W/H" (e.g. "16/9"). Using "${DEFAULT_CONFIG.aspectRatio}".`,
+      )
+    }
+    result.aspectRatio = DEFAULT_CONFIG.aspectRatio
   }
 
   if (result.cloudimage && !result.cloudimage.token) {

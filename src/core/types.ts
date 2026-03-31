@@ -74,6 +74,8 @@ export interface CloudImageCarouselConfig {
   theme?: Theme
   /** Slide transition effect */
   transitionEffect?: TransitionEffect
+  /** Aspect ratio of the main view (e.g. '16/9', '4/3', '1/1'). Default: '16/9' */
+  aspectRatio?: string
   /** Minimum zoom level (default: 1) */
   zoomMin?: number
   /** Maximum zoom level (default: 4) */
