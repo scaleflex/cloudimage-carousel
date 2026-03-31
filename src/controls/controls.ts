@@ -52,20 +52,22 @@ export class CarouselControls {
     if (!this.options.showControls || !this.container) return
 
     // Navigation buttons
-    const prevButton = createButton(CI_CAROUSEL_PREV_CLASS, ICONS.PREV, 'Previous slide', () => {
+    const [prevButton, cleanupPrev] = createButton(CI_CAROUSEL_PREV_CLASS, ICONS.PREV, 'Previous slide', () => {
       this.carousel.prev()
       this.showControls()
       this.scheduleHideControls()
     })
+    this.cleanups.push(cleanupPrev)
 
-    const nextButton = createButton(CI_CAROUSEL_NEXT_CLASS, ICONS.NEXT, 'Next slide', () => {
+    const [nextButton, cleanupNext] = createButton(CI_CAROUSEL_NEXT_CLASS, ICONS.NEXT, 'Next slide', () => {
       this.carousel.next()
       this.showControls()
       this.scheduleHideControls()
     })
+    this.cleanups.push(cleanupNext)
 
     // Fullscreen control
-    const fullscreenButton = createButton(
+    const [fullscreenButton, cleanupFs] = createButton(
       CI_CAROUSEL_FULLSCREEN_CLASS,
       ICONS.FULLSCREEN,
       'Enter fullscreen',
@@ -75,6 +77,7 @@ export class CarouselControls {
         this.scheduleHideControls()
       },
     )
+    this.cleanups.push(cleanupFs)
 
     // Add nav buttons to container
     this.container.appendChild(prevButton)
@@ -86,11 +89,13 @@ export class CarouselControls {
 
     // Autoplay pause/play button (WCAG 2.2.2 Pause, Stop, Hide)
     if (this.options.autoplay) {
-      this.autoplayButton = createButton(CI_CAROUSEL_AUTOPLAY_CLASS, ICONS.PAUSE, 'Pause autoplay', () => {
+      const [autoplayBtn, cleanupAutoplay] = createButton(CI_CAROUSEL_AUTOPLAY_CLASS, ICONS.PAUSE, 'Pause autoplay', () => {
         this.toggleAutoplay()
         this.showControls()
         this.scheduleHideControls()
       })
+      this.autoplayButton = autoplayBtn
+      this.cleanups.push(cleanupAutoplay)
       utilityGroup.appendChild(this.autoplayButton)
     }
 
@@ -103,6 +108,7 @@ export class CarouselControls {
     this.cleanups.push(() => document.removeEventListener(KEYDOWN_EVENT, handleKeyDown))
 
     // Touch controls — show/hide on interaction
+    const touchOptions: AddEventListenerOptions = { passive: true }
     const handleTouchStart = () => this.showControls()
     const handleTouchEnd = () => {
       if (this.hideControlsTimeout) clearTimeout(this.hideControlsTimeout)
@@ -111,11 +117,11 @@ export class CarouselControls {
       }, CONTROLS_HIDE_DELAY)
     }
 
-    this.carousel.mainView?.addEventListener('touchstart', handleTouchStart, { passive: true })
-    this.carousel.mainView?.addEventListener('touchend', handleTouchEnd, { passive: true })
+    this.carousel.mainView?.addEventListener('touchstart', handleTouchStart, touchOptions)
+    this.carousel.mainView?.addEventListener('touchend', handleTouchEnd, touchOptions)
     this.cleanups.push(() => {
-      this.carousel.mainView?.removeEventListener('touchstart', handleTouchStart)
-      this.carousel.mainView?.removeEventListener('touchend', handleTouchEnd)
+      this.carousel.mainView?.removeEventListener('touchstart', handleTouchStart, touchOptions)
+      this.carousel.mainView?.removeEventListener('touchend', handleTouchEnd, touchOptions)
     })
   }
 

@@ -30,10 +30,11 @@ export function createFocusTrap(container: HTMLElement, isActive?: () => boolean
     const first = focusable[0]
     const last = focusable[focusable.length - 1]
 
-    if (e.shiftKey && document.activeElement === first) {
+    const active = document.activeElement
+    if (e.shiftKey && active && active === first) {
       e.preventDefault()
       last.focus()
-    } else if (!e.shiftKey && document.activeElement === last) {
+    } else if (!e.shiftKey && active && active === last) {
       e.preventDefault()
       first.focus()
     }

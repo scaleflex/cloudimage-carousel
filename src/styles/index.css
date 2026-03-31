@@ -114,6 +114,7 @@
   height: 100%;
   touch-action: pan-y;
   -webkit-user-select: none;
+  -moz-user-select: none;
   user-select: none;
 }
 
@@ -330,7 +331,7 @@
   align-items: center;
   justify-content: center;
   box-shadow: var(--ci-carousel-btn-shadow);
-  transition: background 150ms ease;
+  transition: background var(--ci-carousel-transition-fast) ease;
   padding: 0;
 }
 
@@ -678,8 +679,8 @@
   --ci-carousel-thumbnails-border: 1px solid rgba(255, 255, 255, 0.1);
 
   /* Scroll hint */
-  --ci-carousel-hint-bg: rgba(255, 255, 255, 0.15);
-  --ci-carousel-hint-color: #f0f0f0;
+  --ci-carousel-hint-bg: rgba(255, 255, 255, 0.35);
+  --ci-carousel-hint-color: #ffffff;
 
   /* Fullscreen */
   --ci-carousel-fullscreen-bg: rgba(0, 0, 0, 0.98);

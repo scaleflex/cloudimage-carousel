@@ -31,7 +31,7 @@ import {
 } from '../constants/classes.constants'
 import { CLICK_EVENT } from '../constants/events.constants'
 import { KEYBOARD_KEYS, PLACEHOLDER_SVG } from '../constants/controls.constants'
-import { ICONS } from '../constants/icons.contants'
+import { ICONS } from '../constants/icons.constants'
 import { CarouselControls } from '../controls/controls'
 import { SwipeControls } from '../controls/swipe.controls'
 import { ZoomPanControls } from '../controls/zoom-pan.controls'
@@ -218,11 +218,15 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     applyContainerAria(container, this.keyboardHints.id)
   }
 
-  /** Cache the CSS transition duration once to avoid getComputedStyle() per slide change. */
+  /** Read the CSS transition duration, caching on first use to avoid layout thrash. */
   private cacheTransitionDuration(): void {
     if (!this.container) return
-    const raw = getComputedStyle(this.container).getPropertyValue('--ci-carousel-transition-slow') || '0.7'
-    this.transitionDurationMs = parseFloat(raw) * 1000
+    // Defer to first slide change if styles aren't computed yet
+    requestAnimationFrame(() => {
+      if (!this.container) return
+      const raw = getComputedStyle(this.container).getPropertyValue('--ci-carousel-transition-slow') || '0.7'
+      this.transitionDurationMs = parseFloat(raw) * 1000
+    })
   }
 
   // ==========================================================================
@@ -282,6 +286,14 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     if (this.options.showThumbnails) this.renderThumbnails()
     if (this.options.showBullets) this.renderBullets()
     this.setupLazyLoading()
+
+    // Announce initial slide to screen readers
+    if (this.images.length > 0) {
+      announceToScreenReader(
+        this.liveRegion,
+        `Carousel loaded with ${this.images.length} slides. ${this.images[0].alt}`,
+      )
+    }
   }
 
   // ==========================================================================

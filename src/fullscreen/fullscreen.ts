@@ -72,23 +72,27 @@ export function createFullscreenControl(
     options.onChange?.(fs)
   }
 
+  function logError(action: string) {
+    return (err: Error) => console.warn(`[@cloudimage/carousel] Fullscreen ${action} failed:`, err.message)
+  }
+
   function toggle(): void {
     if (isActive()) {
-      exitFullscreen().catch(() => {})
+      exitFullscreen().catch(logError('exit'))
     } else {
-      requestFullscreen(container).catch(() => {})
+      requestFullscreen(container).catch(logError('enter'))
     }
   }
 
   function enter(): void {
     if (!isActive()) {
-      requestFullscreen(container).catch(() => {})
+      requestFullscreen(container).catch(logError('enter'))
     }
   }
 
   function exit(): void {
     if (isActive()) {
-      exitFullscreen().catch(() => {})
+      exitFullscreen().catch(logError('exit'))
     }
   }
 

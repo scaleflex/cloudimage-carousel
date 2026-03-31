@@ -10,25 +10,25 @@ describe('isBrowser', () => {
 
 describe('createButton', () => {
   it('creates a button with the correct class', () => {
-    const btn = createButton('my-class', '<span>Icon</span>', 'Click me', () => {})
+    const [btn] = createButton('my-class', '<span>Icon</span>', 'Click me', () => {})
     expect(btn.tagName).toBe('BUTTON')
     expect(btn.classList.contains('ci-carousel-btn')).toBe(true)
     expect(btn.classList.contains('my-class')).toBe(true)
   })
 
   it('sets aria-label', () => {
-    const btn = createButton('cls', '', 'My label', () => {})
+    const [btn] = createButton('cls', '', 'My label', () => {})
     expect(btn.getAttribute('aria-label')).toBe('My label')
   })
 
   it('sets innerHTML', () => {
-    const btn = createButton('cls', '<svg></svg>', 'label', () => {})
+    const [btn] = createButton('cls', '<svg></svg>', 'label', () => {})
     expect(btn.innerHTML).toBe('<svg></svg>')
   })
 
   it('calls onClick when clicked', () => {
     let clicked = false
-    const btn = createButton('cls', '', 'label', () => {
+    const [btn] = createButton('cls', '', 'label', () => {
       clicked = true
     })
     btn.click()
@@ -36,7 +36,7 @@ describe('createButton', () => {
   })
 
   it('stops event propagation on click', () => {
-    const btn = createButton('cls', '', 'label', () => {})
+    const [btn] = createButton('cls', '', 'label', () => {})
     const parent = document.createElement('div')
     parent.appendChild(btn)
 
@@ -47,5 +47,18 @@ describe('createButton', () => {
 
     btn.click()
     expect(parentClicked).toBe(false)
+  })
+
+  it('returns a cleanup function that removes the listener', () => {
+    let clickCount = 0
+    const [btn, cleanup] = createButton('cls', '', 'label', () => {
+      clickCount++
+    })
+    btn.click()
+    expect(clickCount).toBe(1)
+
+    cleanup()
+    btn.click()
+    expect(clickCount).toBe(1)
   })
 })

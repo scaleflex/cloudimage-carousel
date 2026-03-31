@@ -57,7 +57,7 @@ The existing ecosystem for image carousels has significant gaps:
 
 ### Key Inspirations
 
-- **Scaleflex `js-cloudimage-hotspot`** — same build system pattern, React wrapper architecture, accessibility approach, deployment pipeline
+- **Scaleflex `cloudimage-hotspot`** — same build system pattern, React wrapper architecture, accessibility approach, deployment pipeline
 - **Scaleflex `cloudimage-360`** — CDN integration pattern, UMD global naming convention
 
 ---
@@ -761,7 +761,7 @@ All animations and transitions respect the `prefers-reduced-motion: reduce` medi
 
 ### 9.1 Build Tool
 
-**Vite** is used as the build tool in library mode, following the pattern established by Scaleflex's `js-cloudimage-hotspot` project.
+**Vite** is used as the build tool in library mode, following the pattern established by Scaleflex's `cloudimage-hotspot` project.
 
 ### 9.2 Output Formats
 
@@ -865,7 +865,7 @@ The library has **zero runtime dependencies**. All functionality — zoom/pan, t
 │   │   ├── classes.constants.ts         # CSS class name strings
 │   │   ├── controls.constants.ts        # Control-related constants + keyboard keys
 │   │   ├── events.constants.ts          # DOM event name strings
-│   │   ├── icons.contants.ts            # SVG icon markup (note: typo is intentional)
+│   │   ├── icons.constants.ts           # SVG icon markup
 │   │   ├── transition.constants.ts      # Transition effect names
 │   │   └── index.ts                     # Barrel export
 │   ├── fullscreen/

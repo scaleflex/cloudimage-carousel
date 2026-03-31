@@ -2,7 +2,7 @@
 
 ## Summary
 
-Built `@cloudimage/carousel` — a zero-dependency TypeScript library for image carousels with zoom/pan, swipe gestures, four transition effects, and WCAG 2.1 AA accessibility. Evolved from a legacy Webpack/Babel/jQuery codebase (`js-carousel`) into a modern Vite-based library following the patterns established by `js-cloudimage-hotspot`.
+Built `@cloudimage/carousel` — a zero-dependency TypeScript library for image carousels with zoom/pan, swipe gestures, four transition effects, and WCAG 2.1 AA accessibility. Evolved from a legacy Webpack/Babel/jQuery codebase (`js-carousel`) into a modern Vite-based library following the patterns established by `cloudimage-hotspot`.
 
 ## Actual Metrics
 
@@ -43,7 +43,7 @@ Built `@cloudimage/carousel` — a zero-dependency TypeScript library for image 
 | Focus escaping fullscreen overlay | `carousel.ts` | Implemented focus trap via `createFocusTrap()` in `a11y/focus.ts` with `isActive` guard |
 | Autoplay violating WCAG 2.2.2 | `controls.ts` | Added pause/play button with `aria-label` updates; pause on hover and keyboard focus |
 | Layout shift during slide transitions | `carousel.ts` | Used `getBoundingClientRect()` force-reflow before adding `active` class; `transitionend` + timeout fallback for cleanup |
-| `icons.contants.ts` filename typo | — | Documented as intentional in CLAUDE.md; all imports reference the typo consistently |
+| `icons.contants.ts` filename typo | — | Fixed: renamed to `icons.constants.ts` and `thumbnails.constants.ts` |
 | React StrictMode double-mount | `carousel.ts` | `destroy()` restores container to original state (removes all classes, ARIA attrs, innerHTML) so re-mount works cleanly |
 | Rollup default export warning | `vite.config.ts` | Used `rollupOptions.output.exports: 'default'` for the main bundle |
 | Data attribute parsing edge cases | `config.ts` | Boolean strings (`'true'`/`'false'`), numeric strings, JSON arrays all handled with type-safe parsing |
@@ -180,11 +180,9 @@ The original `js-carousel` was a vanilla JavaScript project using:
 | `src/constants/classes.constants.ts` | Created | All CSS class names: `CI_HOST_CONTAINER_CLASS`, `CI_CAROUSEL_MAIN_CLASS`, `CI_CAROUSEL_IMAGE_CLASS`, etc. |
 | `src/constants/controls.constants.ts` | Created | `KEYBOARD_KEYS` object with all key names |
 | `src/constants/events.constants.ts` | Created | DOM event strings: `CLICK_EVENT`, `KEYDOWN_EVENT`, `MOUSEWHEEL_EVENT`, `DBLCLICK_EVENT` |
-| `src/constants/icons.contants.ts` | Created | SVG icon markup for prev, next, fullscreen, exit-fullscreen, zoom controls |
+| `src/constants/icons.constants.ts` | Created | SVG icon markup for prev, next, fullscreen, exit-fullscreen, zoom controls |
 | `src/constants/transition.constants.ts` | Created | Transition effect name constants |
 | `src/constants/index.ts` | Created | Barrel export |
-
-> **Note:** `icons.contants.ts` has a typo ("contants" missing 's'). This is an established filename — documented in CLAUDE.md as intentional to avoid import breakage.
 
 ---
 

@@ -33,20 +33,23 @@ export function addListener<K extends keyof HTMLElementEventMap>(
 
 /**
  * Creates a button element with a click handler.
+ * Returns [button, cleanup] — call cleanup() to remove the listener.
  */
 export const createButton = (
   className: string,
   innerHTML: string,
   ariaLabel: string,
   onClick: (e: MouseEvent) => void,
-): HTMLButtonElement => {
+): [HTMLButtonElement, () => void] => {
   const button = document.createElement('button')
   button.classList.add('ci-carousel-btn', className)
   button.setAttribute('aria-label', ariaLabel)
   button.innerHTML = innerHTML
-  button.addEventListener(CLICK_EVENT, (e: MouseEvent) => {
+  const handler = (e: MouseEvent) => {
     e.stopPropagation()
     onClick(e)
-  })
-  return button
+  }
+  button.addEventListener(CLICK_EVENT, handler)
+  const cleanup = () => button.removeEventListener(CLICK_EVENT, handler)
+  return [button, cleanup]
 }

@@ -27,6 +27,7 @@ export class SwipeControls {
   // Bound handlers
   private handleTouchStart: (e: TouchEvent) => void
   private handleTouchEnd: (e: TouchEvent) => void
+  private touchOptions: AddEventListenerOptions = { passive: true }
   private zoomListener: ((zoom: number) => void) | null = null
 
   constructor(carousel: CarouselRef) {
@@ -37,14 +38,21 @@ export class SwipeControls {
     this.handleTouchStart = this._handleTouchStart.bind(this)
     this.handleTouchEnd = this._handleTouchEnd.bind(this)
 
-    this.imagesContainer?.addEventListener('touchstart', this.handleTouchStart, { passive: true })
-    this.imagesContainer?.addEventListener('touchend', this.handleTouchEnd, { passive: true })
+    this.touchOptions = { passive: true }
+    this.imagesContainer?.addEventListener('touchstart', this.handleTouchStart, this.touchOptions)
+    this.imagesContainer?.addEventListener('touchend', this.handleTouchEnd, this.touchOptions)
 
     this.setupZoomHandler()
   }
 
   private _handleTouchStart(e: TouchEvent): void {
-    if (e.touches.length !== 1) return
+    if (e.touches.length !== 1) {
+      // Reset on multi-touch to avoid stale state
+      this.startX = 0
+      this.startY = 0
+      this.startTime = 0
+      return
+    }
     this.startX = e.touches[0].clientX
     this.startY = e.touches[0].clientY
     this.startTime = performance.now()
@@ -92,8 +100,8 @@ export class SwipeControls {
       this.zoomListener = null
     }
 
-    this.imagesContainer?.removeEventListener('touchstart', this.handleTouchStart)
-    this.imagesContainer?.removeEventListener('touchend', this.handleTouchEnd)
+    this.imagesContainer?.removeEventListener('touchstart', this.handleTouchStart, this.touchOptions)
+    this.imagesContainer?.removeEventListener('touchend', this.handleTouchEnd, this.touchOptions)
 
     this.carousel = null
     this.imagesContainer = null

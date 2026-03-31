@@ -401,11 +401,14 @@ export class ZoomPanControls {
     this.imagesContainer.removeEventListener(MOUSEWHEEL_EVENT, this.handleWheel)
     this.imagesContainer.removeEventListener(DBLCLICK_EVENT, this.handleDblClick)
     this.imagesContainer.removeEventListener('mousedown', this.handleMouseDown)
-    document.removeEventListener('mousemove', this.handleMouseMove)
-    document.removeEventListener('mouseup', this.handleMouseUp)
     this.imagesContainer.removeEventListener('touchstart', this.handleTouchStart)
     this.imagesContainer.removeEventListener('touchmove', this.handleTouchMove)
     this.imagesContainer.removeEventListener('touchend', this.handleTouchEnd)
+
+    // Always clean up document-level drag listeners (may be attached if destroyed mid-drag)
+    document.removeEventListener('mousemove', this.handleMouseMove)
+    document.removeEventListener('mouseup', this.handleMouseUp)
+    this.isDragging = false
 
     if (this.scrollHintTimeout) clearTimeout(this.scrollHintTimeout)
     this.scrollHint?.remove()
