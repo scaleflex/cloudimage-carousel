@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { CloudImageCarouselViewer } from 'js-cloudimage-carousel/react';
+import { CloudImageCarouselViewer } from '@cloudimage/carousel/react';
 
 const images = [
   'https://scaleflex.cloudimg.io/v7/https://samples.scaleflex.com/hotel.jpg',

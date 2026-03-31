@@ -1,8 +1,8 @@
-# Implementation Record: js-cloudimage-carousel
+# Implementation Record: @cloudimage/carousel
 
 ## Summary
 
-Built `js-cloudimage-carousel` — a zero-dependency TypeScript library for image carousels with zoom/pan, swipe gestures, four transition effects, and WCAG 2.1 AA accessibility. Evolved from a legacy Webpack/Babel/jQuery codebase (`js-carousel`) into a modern Vite-based library following the patterns established by `js-cloudimage-hotspot`.
+Built `@cloudimage/carousel` — a zero-dependency TypeScript library for image carousels with zoom/pan, swipe gestures, four transition effects, and WCAG 2.1 AA accessibility. Evolved from a legacy Webpack/Babel/jQuery codebase (`js-carousel`) into a modern Vite-based library following the patterns established by `js-cloudimage-hotspot`.
 
 ## Actual Metrics
 
@@ -30,7 +30,7 @@ Built `js-cloudimage-carousel` — a zero-dependency TypeScript library for imag
 | Immutable config merging | `mergeConfig()` spreads defaults → data attributes → JS options. Never mutates input. Adopted from hotspot's `config.ts` pattern. |
 | Dedicated `a11y/` folder | Extracted accessibility utilities (live region, focus trap, ARIA management) into reusable functions. Mirrors hotspot's `src/a11y/` structure. |
 | Custom zoom/pan (no library) | Replaced Panzoom.js and Hammer.js dependencies with custom CSS transform-based implementation. Zero dependencies. |
-| Separate React entry point | `js-cloudimage-carousel/react` avoids bundling React for vanilla JS consumers. Optional peer dependency. |
+| Separate React entry point | `@cloudimage/carousel/react` avoids bundling React for vanilla JS consumers. Optional peer dependency. |
 | `autoInit()` static method | Scans DOM for `data-ci-carousel-images` attributes, matching hotspot's `autoInit()` pattern for CDN/no-build usage. |
 
 ## Issues Encountered & Resolved
@@ -307,12 +307,12 @@ The original `js-carousel` was a vanilla JavaScript project using:
 | `demo/configurator.ts` | Created | Interactive playground: toggles and selects update carousel config in real-time, generated code with copy button |
 | `demo/react-demo/` | Created | React demo with `App.tsx`, component and hook examples |
 | `.github/workflows/deploy-pages.yml` | Created | GitHub Actions: push to `master` → build demo → deploy to GitHub Pages |
-| `config/vite.demo.config.ts` | Created | Production build: `base: '/js-cloudimage-carousel/'`, outputs to `dist-demo/` |
+| `config/vite.demo.config.ts` | Created | Production build: `base: '/@cloudimage/carousel/'`, outputs to `dist-demo/` |
 
 ### Results
 
 - `npm run build:demo` produces `dist-demo/` (38 KB HTML + 57 KB JS + 21 KB CSS)
-- GitHub Pages URL: `https://scaleflex.github.io/js-cloudimage-carousel/`
+- GitHub Pages URL: `https://scaleflex.github.io/cloudimage-carousel/`
 
 ---
 
@@ -363,7 +363,7 @@ The original `js-carousel` was a vanilla JavaScript project using:
 | Initial | Legacy `js-carousel` created with Webpack, Babel, Panzoom.js, Hammer.js |
 | Early development | Added zoom/pan, fullscreen, thumbnail options, configuration system |
 | PCL-575 | Major rewrite: TypeScript, Vite, modular architecture, CSS variables |
-| 2026-03-15 | v1.0.0 published to npm as `js-cloudimage-carousel` |
+| 2026-03-15 | v1.0.0 published to npm as `@cloudimage/carousel` |
 | 2026-03-17 | v1.0.1: React wrapper, data attributes, accessibility, theming, documentation |
 | 2026-03-19 | Quality alignment: a11y module, ESLint, docs, test expansion (113 → 178 tests), GitHub Pages, SPECS.md |
 
@@ -380,7 +380,7 @@ The original `js-carousel` was a vanilla JavaScript project using:
 | WCAG 2.1 AA accessibility | Adopted | Keyboard nav, ARIA, live region, focus management, reduced motion |
 | Vitest + jsdom testing | Adopted | 178 tests across 12 files |
 | Vite library mode | Adopted | ESM + CJS + UMD outputs, sourcemaps |
-| React wrapper (separate entry) | Adopted | `js-cloudimage-carousel/react` with component, hook, ref API |
+| React wrapper (separate entry) | Adopted | `@cloudimage/carousel/react` with component, hook, ref API |
 | GitHub Pages demo | Adopted | `deploy-pages.yml` workflow, `build:demo` script |
 | Documentation suite | Adopted | README, CHANGELOG, SPECS, IMPLEMENTATION, docs/ folder |
 | `sideEffects: false` | Adopted | Tree-shaking hint in package.json |

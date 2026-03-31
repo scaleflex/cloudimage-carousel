@@ -1,29 +1,29 @@
 <p align="center">
-     <img src="https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-360-view/logo_scaleflex_on_white_bg.jpg?vh=91b12d&w=700" alt="Scaleflex" width="350">
+     <img src="https://scaleflex.cloudimg.io/v7/plugins/scaleflex/logo.png?vh=b0a502&radius=25&w=700" alt="Scaleflex" width="350">
 </p>
 
-<h1 align="center">js-cloudimage-carousel</h1>
+<h1 align="center">@cloudimage/carousel</h1>
 
 <p align="center">
   Lightweight image carousel with zoom, swipe, transitions, and accessibility. Zero dependencies.
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/js-cloudimage-carousel"><img src="https://img.shields.io/npm/v/js-cloudimage-carousel.svg?style=flat-square" alt="npm version"></a>
-  <a href="https://www.npmjs.com/package/js-cloudimage-carousel"><img src="https://img.shields.io/npm/dm/js-cloudimage-carousel.svg?style=flat-square" alt="npm downloads"></a>
-  <a href="https://github.com/scaleflex/js-cloudimage-carousel/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/js-cloudimage-carousel.svg?style=flat-square" alt="license"></a>
-  <a href="https://bundlephobia.com/package/js-cloudimage-carousel"><img src="https://badgen.net/bundlephobia/minzip/js-cloudimage-carousel" alt="bundle size"></a>
+  <a href="https://www.npmjs.com/package/@cloudimage/carousel"><img src="https://img.shields.io/npm/v/@cloudimage/carousel.svg?style=flat-square" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@cloudimage/carousel"><img src="https://img.shields.io/npm/dm/@cloudimage/carousel.svg?style=flat-square" alt="npm downloads"></a>
+  <a href="https://github.com/scaleflex/cloudimage-carousel/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/@cloudimage/carousel.svg?style=flat-square" alt="license"></a>
+  <a href="https://bundlephobia.com/package/@cloudimage/carousel"><img src="https://badgen.net/bundlephobia/minzip/@cloudimage/carousel" alt="bundle size"></a>
 </p>
 
 <p align="center">
-  <a href="https://scaleflex.github.io/js-cloudimage-carousel/">Live Demo</a> |
-  <a href="https://codesandbox.io/p/devbox/github/scaleflex/js-cloudimage-carousel/tree/master/examples/vanilla">Vanilla Sandbox</a> |
-  <a href="https://codesandbox.io/p/devbox/github/scaleflex/js-cloudimage-carousel/tree/master/examples/react">React Sandbox</a>
+  <a href="https://scaleflex.github.io/cloudimage-carousel/">Live Demo</a> |
+  <a href="https://codesandbox.io/p/devbox/github/scaleflex/cloudimage-carousel/tree/master/examples/vanilla">Vanilla Sandbox</a> |
+  <a href="https://codesandbox.io/p/devbox/github/scaleflex/cloudimage-carousel/tree/master/examples/react">React Sandbox</a>
 </p>
 
 ---
 
-## Why js-cloudimage-carousel?
+## Why @cloudimage/carousel?
 
 Most carousel libraries are bloated, inaccessible, or require heavy frameworks. This library was built to fill the gap:
 
@@ -57,13 +57,13 @@ Most carousel libraries are bloated, inaccessible, or require heavy frameworks. 
 ## Installation
 
 ```bash
-npm install js-cloudimage-carousel
+npm install @cloudimage/carousel
 ```
 
 ### CDN
 
 ```html
-<script src="https://scaleflex.cloudimg.io/v7/plugins/js-cloudimage-carousel/1.0.1/js-cloudimage-carousel.min.js?func=proxy"></script>
+<script src="https://scaleflex.cloudimg.io/v7/plugins/carousel/1.0.3/carousel.min.js?func=proxy"></script>
 ```
 
 ## Quick Start
@@ -71,7 +71,7 @@ npm install js-cloudimage-carousel
 ### JavaScript API
 
 ```js
-import { CloudImageCarousel } from 'js-cloudimage-carousel'
+import { CloudImageCarousel } from '@cloudimage/carousel'
 
 const carousel = new CloudImageCarousel('#my-carousel', {
   images: ['photo1.jpg', 'photo2.jpg', 'photo3.jpg'],
@@ -167,7 +167,7 @@ CloudImageCarousel.autoInit(root?: HTMLElement | Document): CloudImageCarousel[]
 ## React Usage
 
 ```tsx
-import { CloudImageCarouselViewer, useCloudImageCarousel } from 'js-cloudimage-carousel/react'
+import { CloudImageCarouselViewer, useCloudImageCarousel } from '@cloudimage/carousel/react'
 
 // Component
 function Gallery() {

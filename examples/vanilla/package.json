@@ -1,14 +1,14 @@
 {
-  "name": "js-cloudimage-carousel-vanilla-example",
+  "name": "@cloudimage/carousel-vanilla-example",
   "private": true,
   "version": "0.0.0",
-  "description": "Vanilla JS example for js-cloudimage-carousel",
+  "description": "Vanilla JS example for @cloudimage/carousel",
   "scripts": {
     "dev": "vite",
     "start": "vite"
   },
   "dependencies": {
-    "js-cloudimage-carousel": "^1.0.0"
+    "@cloudimage/carousel": "^1.0.0"
   },
   "devDependencies": {
     "vite": "^5.4.0"

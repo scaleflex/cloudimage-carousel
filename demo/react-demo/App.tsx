@@ -55,7 +55,7 @@ function ComponentDemo() {
       </div>
 
       <div className="code-block">
-        <code>{`import { CloudImageCarouselViewer } from 'js-cloudimage-carousel/react'
+        <code>{`import { CloudImageCarouselViewer } from '@cloudimage/carousel/react'
 
 <CloudImageCarouselViewer
   images={['img1.jpg', 'img2.jpg']}
@@ -146,7 +146,7 @@ function HookDemo() {
       </div>
 
       <div className="code-block">
-        <code>{`import { useCloudImageCarousel } from 'js-cloudimage-carousel/react'
+        <code>{`import { useCloudImageCarousel } from '@cloudimage/carousel/react'
 
 const { containerRef, instance } = useCloudImageCarousel({
   images: ['img1.jpg', 'img2.jpg'],

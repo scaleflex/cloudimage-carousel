@@ -13,7 +13,7 @@ import { useCloudImageCarousel } from './use-cloud-image-carousel'
  *
  * @example
  * ```tsx
- * import { CloudImageCarouselViewer } from 'js-cloudimage-carousel/react'
+ * import { CloudImageCarouselViewer } from '@cloudimage/carousel/react'
  *
  * function App() {
  *   const ref = useRef<CloudImageCarouselViewerRef>(null)

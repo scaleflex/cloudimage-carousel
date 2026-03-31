@@ -1,4 +1,4 @@
-import CloudImageCarousel from 'js-cloudimage-carousel';
+import CloudImageCarousel from '@cloudimage/carousel';
 
 new CloudImageCarousel('#carousel', {
   images: [

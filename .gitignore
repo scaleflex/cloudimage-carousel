@@ -5,8 +5,8 @@
 
 # build output — only CDN bundles are tracked
 /dist/*
-!/dist/js-cloudimage-carousel.min.js
-!/dist/js-cloudimage-carousel.min.js.map
+!/dist/carousel.min.js
+!/dist/carousel.min.js.map
 /dist-demo
 
 # testing

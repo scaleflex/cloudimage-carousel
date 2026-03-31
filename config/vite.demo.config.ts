@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import { resolve } from 'path'
 
 export default defineConfig(({ mode }) => ({
-  base: mode === 'production' ? '/js-cloudimage-carousel/' : '/',
+  base: mode === 'production' ? '/cloudimage-carousel/' : '/',
   root: resolve(__dirname, '../demo'),
   build: {
     outDir: resolve(__dirname, '../dist-demo'),
@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
   },
   resolve: {
     alias: {
-      'js-cloudimage-carousel': resolve(__dirname, '../src/index.ts'),
+      '@cloudimage/carousel': resolve(__dirname, '../src/index.ts'),
     },
   },
 }))

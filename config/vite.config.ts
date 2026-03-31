@@ -8,9 +8,9 @@ export default defineConfig({
       name: 'CloudImageCarousel',
       formats: ['es', 'cjs', 'umd'],
       fileName: (format) => {
-        if (format === 'es') return 'js-cloudimage-carousel.esm.js'
-        if (format === 'cjs') return 'js-cloudimage-carousel.cjs.js'
-        return 'js-cloudimage-carousel.min.js'
+        if (format === 'es') return 'carousel.esm.js'
+        if (format === 'cjs') return 'carousel.cjs.js'
+        return 'carousel.min.js'
       },
     },
     outDir: resolve(__dirname, '../dist'),

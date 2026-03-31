@@ -1,4 +1,4 @@
-# js-cloudimage-carousel — Specification
+# @cloudimage/carousel — Specification
 
 > Lightweight image carousel with zoom, swipe, transitions, and accessibility. Zero dependencies.
 
@@ -27,7 +27,7 @@
 
 ### What
 
-`js-cloudimage-carousel` is an open-source JavaScript library for creating image carousels and image viewers. It provides a lightweight, accessible, and feature-rich carousel component with built-in zoom, swipe gestures, multiple transition effects, and optional Cloudimage CDN integration for responsive image delivery.
+`@cloudimage/carousel` is an open-source JavaScript library for creating image carousels and image viewers. It provides a lightweight, accessible, and feature-rich carousel component with built-in zoom, swipe gestures, multiple transition effects, and optional Cloudimage CDN integration for responsive image delivery.
 
 ### Why
 
@@ -43,7 +43,7 @@ The existing ecosystem for image carousels has significant gaps:
 
 ### Positioning
 
-`js-cloudimage-carousel` fills these gaps by providing:
+`@cloudimage/carousel` fills these gaps by providing:
 
 - A **zero-dependency**, TypeScript-first library
 - **Combined zoom/pan + carousel** in a single package
@@ -250,7 +250,7 @@ interface CloudImageCarouselInstance {
 **Usage example:**
 
 ```js
-import { CloudImageCarousel } from 'js-cloudimage-carousel';
+import { CloudImageCarousel } from '@cloudimage/carousel';
 
 const carousel = new CloudImageCarousel('#my-carousel', {
   images: [
@@ -293,8 +293,8 @@ All configuration is expressed via `data-ci-carousel-*` attributes on the contai
 **Auto-initialization (CDN usage):**
 
 ```html
-<link rel="stylesheet" href="js-cloudimage-carousel.min.css" />
-<script src="js-cloudimage-carousel.min.js"></script>
+<link rel="stylesheet" href="carousel.min.css" />
+<script src="carousel.min.js"></script>
 <script>CloudImageCarousel.autoInit();</script>
 ```
 
@@ -572,7 +572,7 @@ The transition effect name is set as a data attribute on the images container, a
 ### 7.1 Entry Point
 
 ```ts
-import { CloudImageCarouselViewer, useCloudImageCarousel } from 'js-cloudimage-carousel/react';
+import { CloudImageCarouselViewer, useCloudImageCarousel } from '@cloudimage/carousel/react';
 ```
 
 The React wrapper is a **separate entry point** to avoid bundling React for vanilla JS consumers. React is an **optional peer dependency**.
@@ -606,7 +606,7 @@ interface CloudImageCarouselViewerProps {
 **Usage example:**
 
 ```tsx
-import { CloudImageCarouselViewer } from 'js-cloudimage-carousel/react';
+import { CloudImageCarouselViewer } from '@cloudimage/carousel/react';
 
 function Gallery() {
   return (
@@ -626,7 +626,7 @@ function Gallery() {
 Provides direct access to the vanilla `CloudImageCarousel` instance for imperative control:
 
 ```tsx
-import { useCloudImageCarousel } from 'js-cloudimage-carousel/react';
+import { useCloudImageCarousel } from '@cloudimage/carousel/react';
 
 function Gallery() {
   const { containerRef, instance } = useCloudImageCarousel({
@@ -650,7 +650,7 @@ The `<CloudImageCarouselViewer>` component forwards a ref exposing instance meth
 
 ```tsx
 import { useRef } from 'react';
-import { CloudImageCarouselViewer, CloudImageCarouselViewerRef } from 'js-cloudimage-carousel/react';
+import { CloudImageCarouselViewer, CloudImageCarouselViewerRef } from '@cloudimage/carousel/react';
 
 function Gallery() {
   const ref = useRef<CloudImageCarouselViewerRef>(null);
@@ -767,36 +767,36 @@ All animations and transitions respect the `prefers-reduced-motion: reduce` medi
 
 | Format | File | Use Case |
 |---|---|---|
-| **ESM** | `dist/js-cloudimage-carousel.esm.js` | Modern bundlers (Webpack, Vite, Rollup) |
-| **CJS** | `dist/js-cloudimage-carousel.cjs.js` | Node.js, legacy bundlers |
-| **UMD** | `dist/js-cloudimage-carousel.min.js` | CDN `<script>` tag, exposes `window.CloudImageCarousel` |
-| **CSS** | `dist/js-cloudimage-carousel.min.css` | Stylesheet (also inlined in UMD) |
-| **TypeScript** | `dist/types/index.d.ts` | Type definitions |
+| **ESM** | `dist/carousel.esm.js` | Modern bundlers (Webpack, Vite, Rollup) |
+| **CJS** | `dist/carousel.cjs.js` | Node.js, legacy bundlers |
+| **UMD** | `dist/carousel.min.js` | CDN `<script>` tag, exposes `window.CloudImageCarousel` |
+| **CSS** | `dist/carousel.min.css` | Stylesheet (also inlined in UMD) |
+| **TypeScript** | `dist/index.d.ts` | Type definitions |
 | **React ESM** | `dist/react/index.js` | React wrapper (ESM) |
 | **React CJS** | `dist/react/index.cjs` | React wrapper (CJS) |
-| **React Types** | `dist/types/react/index.d.ts` | React wrapper type definitions |
+| **React Types** | `dist/react/index.d.ts` | React wrapper type definitions |
 
 ### 9.3 `package.json` Configuration
 
 ```json
 {
-  "name": "js-cloudimage-carousel",
+  "name": "@cloudimage/carousel",
   "version": "1.0.1",
   "description": "A JavaScript carousel/image viewer plugin by CloudImage (Scaleflex)",
   "license": "MIT",
   "author": "CloudImage by Scaleflex",
-  "main": "dist/js-cloudimage-carousel.cjs.js",
-  "module": "dist/js-cloudimage-carousel.esm.js",
-  "unpkg": "dist/js-cloudimage-carousel.min.js",
-  "types": "dist/types/index.d.ts",
+  "main": "dist/carousel.cjs.js",
+  "module": "dist/carousel.esm.js",
+  "unpkg": "dist/carousel.min.js",
+  "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/types/index.d.ts",
-      "import": "./dist/js-cloudimage-carousel.esm.js",
-      "require": "./dist/js-cloudimage-carousel.cjs.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/carousel.esm.js",
+      "require": "./dist/carousel.cjs.js"
     },
     "./react": {
-      "types": "./dist/types/react/index.d.ts",
+      "types": "./dist/react/index.d.ts",
       "import": "./dist/react/index.js",
       "require": "./dist/react/index.cjs"
     }
@@ -850,7 +850,7 @@ The library has **zero runtime dependencies**. All functionality — zoom/pan, t
 ## 10. Project Structure
 
 ```
-js-cloudimage-carousel/
+@cloudimage/carousel/
 ├── src/
 │   ├── index.ts                         # Main entry — exports CloudImageCarousel
 │   ├── core/
@@ -911,8 +911,8 @@ js-cloudimage-carousel/
 │   ├── vite.react-demo.config.ts       # React demo dev server config
 │   └── vite.demo.config.ts             # Demo build config (GitHub Pages)
 ├── dist/                                # Built output (CDN bundles committed)
-│   ├── js-cloudimage-carousel.min.js
-│   └── js-cloudimage-carousel.min.js.map
+│   ├── carousel.min.js
+│   └── carousel.min.js.map
 ├── .github/
 │   └── workflows/
 │       └── deploy-pages.yml             # GitHub Pages deployment workflow
@@ -932,7 +932,7 @@ js-cloudimage-carousel/
 
 ## 11. GitHub Pages Demo
 
-The demo site is hosted at `https://scaleflex.github.io/js-cloudimage-carousel/` and deployed via GitHub Actions on push to `master`.
+The demo site is hosted at `https://scaleflex.github.io/cloudimage-carousel/` and deployed via GitHub Actions on push to `master`.
 
 ### 11.1 Demo Sections
 
@@ -1049,7 +1049,7 @@ const carousel = new CloudImageCarousel('#el', {
 
 ## 13. Competitor Feature Matrix
 
-| Feature | js-cloudimage-carousel | Swiper | Slick | Flickity | Splide |
+| Feature | @cloudimage/carousel | Swiper | Slick | Flickity | Splide |
 |---|---|---|---|---|---|
 | Zero dependencies | Yes | Yes | jQuery | jQuery | Yes |
 | TypeScript | Full | Full | No | No | Full |

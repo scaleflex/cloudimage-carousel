@@ -38,7 +38,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Renamed package from `js-carousel` to `js-cloudimage-carousel`
+- Renamed package from `js-carousel` to `@cloudimage/carousel`
 - Migrated build system from Webpack/Babel to Vite (library mode) with ESM + CJS + UMD outputs
 - Rewrote codebase in TypeScript
 - Consolidated all CSS into single stylesheet with CSS custom properties for theming
@@ -47,7 +47,7 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- **React wrapper** — `<CloudImageCarouselViewer>` component, `useCloudImageCarousel` hook, and ref API via `js-cloudimage-carousel/react`
+- **React wrapper** — `<CloudImageCarouselViewer>` component, `useCloudImageCarousel` hook, and ref API via `@cloudimage/carousel/react`
 - **HTML data-attribute initialization** — `data-ci-carousel-*` attributes with `CloudImageCarousel.autoInit()`
 - **Four transition effects** — slide, fade, zoom, and flip with configurable easing via CSS variables
 - **CSS variable theming** — light and dark themes with 30+ customizable `--ci-carousel-*` properties
@@ -78,6 +78,6 @@ All notable changes to this project will be documented in this file.
 - **Zero runtime dependencies**
 - **Output formats** — ESM, CJS, and UMD bundles
 
-[1.0.2]: https://github.com/scaleflex/js-cloudimage-carousel/releases/tag/v1.0.2
-[1.0.1]: https://github.com/scaleflex/js-cloudimage-carousel/releases/tag/v1.0.1
-[1.0.0]: https://github.com/scaleflex/js-cloudimage-carousel/releases/tag/v1.0.0
+[1.0.2]: https://github.com/scaleflex/cloudimage-carousel/releases/tag/v1.0.2
+[1.0.1]: https://github.com/scaleflex/cloudimage-carousel/releases/tag/v1.0.1
+[1.0.0]: https://github.com/scaleflex/cloudimage-carousel/releases/tag/v1.0.0

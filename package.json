@@ -1,16 +1,16 @@
 {
-  "name": "js-cloudimage-carousel",
+  "name": "@cloudimage/carousel",
   "version": "1.0.3",
   "description": "A JavaScript carousel/image viewer plugin by CloudImage (Scaleflex)",
-  "main": "dist/js-cloudimage-carousel.cjs.js",
-  "module": "dist/js-cloudimage-carousel.esm.js",
-  "unpkg": "dist/js-cloudimage-carousel.min.js",
+  "main": "dist/carousel.cjs.js",
+  "module": "dist/carousel.esm.js",
+  "unpkg": "dist/carousel.min.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/js-cloudimage-carousel.esm.js",
-      "require": "./dist/js-cloudimage-carousel.cjs.js"
+      "import": "./dist/carousel.esm.js",
+      "require": "./dist/carousel.cjs.js"
     },
     "./react": {
       "types": "./dist/react/index.d.ts",
@@ -59,11 +59,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/scaleflex/js-cloudimage-carousel.git"
+    "url": "https://github.com/scaleflex/cloudimage-carousel.git"
   },
-  "homepage": "https://github.com/scaleflex/js-cloudimage-carousel#readme",
+  "homepage": "https://github.com/scaleflex/cloudimage-carousel#readme",
   "bugs": {
-    "url": "https://github.com/scaleflex/js-cloudimage-carousel/issues"
+    "url": "https://github.com/scaleflex/cloudimage-carousel/issues"
   },
   "peerDependencies": {
     "react": ">=17.0.0",

@@ -1,14 +1,14 @@
 {
-  "name": "js-cloudimage-carousel-react-example",
+  "name": "@cloudimage/carousel-react-example",
   "private": true,
   "version": "0.0.0",
-  "description": "React example for js-cloudimage-carousel",
+  "description": "React example for @cloudimage/carousel",
   "scripts": {
     "dev": "vite",
     "start": "vite"
   },
   "dependencies": {
-    "js-cloudimage-carousel": "^1.0.0",
+    "@cloudimage/carousel": "^1.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
