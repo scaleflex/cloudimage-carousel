@@ -1,5 +1,7 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App';
+import '@cloudimage/carousel'
+import React from 'react'
+import { createRoot } from 'react-dom/client'
 
-createRoot(document.getElementById('root')).render(<App />);
+import App from './App'
+
+createRoot(document.getElementById('root')).render(<App />)
