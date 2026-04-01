@@ -251,6 +251,53 @@ new CloudImageCarousel('#alt-text-demo', {
 }
 
 // ==========================================================================
+// Nav: scroll shadow + active section highlighting
+// ==========================================================================
+
+{
+  const nav = document.getElementById('demo-nav')
+  const navLinks = document.querySelectorAll<HTMLAnchorElement>('.demo-nav-links a')
+  const sections = document.querySelectorAll<HTMLElement>('section[id]')
+
+  const updateNav = (): void => {
+    // Shadow on scroll
+    if (nav) {
+      nav.classList.toggle('scrolled', window.scrollY > 10)
+    }
+
+    // Active section
+    let currentId = ''
+    const offset = 120
+    for (const section of sections) {
+      if (section.offsetTop - offset <= window.scrollY) {
+        currentId = section.id
+      }
+    }
+    for (const link of navLinks) {
+      const href = link.getAttribute('href')
+      link.classList.toggle('active', href === `#${currentId}`)
+    }
+  }
+
+  // Smooth scroll for nav link clicks (manual offset to respect sticky nav)
+  for (const link of navLinks) {
+    link.addEventListener('click', (e) => {
+      const href = link.getAttribute('href')
+      if (!href?.startsWith('#')) return
+      const target = document.getElementById(href.slice(1))
+      if (!target) return
+      e.preventDefault()
+      const navHeight = nav ? nav.offsetHeight : 0
+      const top = target.getBoundingClientRect().top + window.scrollY - navHeight - 12
+      window.scrollTo({ top, behavior: 'smooth' })
+    })
+  }
+
+  window.addEventListener('scroll', updateNav, { passive: true })
+  updateNav()
+}
+
+// ==========================================================================
 // Mobile burger menu
 // ==========================================================================
 
