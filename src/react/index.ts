@@ -1,3 +1,9 @@
+// Styles — inject carousel CSS when the React entry is used
+import cssText from '../styles/index.css?inline'
+import { injectStyles } from '../utils/dom.utils'
+
+injectStyles(cssText)
+
 // Component
 export { CloudImageCarouselViewer } from './cloud-image-carousel-viewer'
 
