@@ -63,7 +63,7 @@ npm install @cloudimage/carousel
 ### CDN
 
 ```html
-<script src="https://scaleflex.cloudimg.io/v7/plugins/carousel/1.0.3/carousel.min.js?func=proxy"></script>
+<script src="https://scaleflex.cloudimg.io/v7/plugins/carousel/2.0.0/carousel.min.js?vh=9cdd6f&func=proxy"></script>
 ```
 
 ## Quick Start

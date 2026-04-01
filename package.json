@@ -1,6 +1,6 @@
 {
   "name": "@cloudimage/carousel",
-  "version": "1.0.3",
+  "version": "2.0.0",
   "description": "A JavaScript carousel/image viewer plugin by CloudImage (Scaleflex)",
   "main": "dist/carousel.cjs.js",
   "module": "dist/carousel.esm.js",
@@ -36,7 +36,8 @@
     "lint": "eslint src/ tests/ --ext .ts,.tsx",
     "format": "prettier --write \"**/*.{ts,js,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{ts,js,json,css,md}\"",
-    "prepublishOnly": "npm run lint && npm run typecheck && npm run test && npm run build"
+    "prepublishOnly": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "release": "node scripts/release-cdn.mjs plugin"
   },
   "keywords": [
     "carousel",
