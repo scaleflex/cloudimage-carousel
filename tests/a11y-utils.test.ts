@@ -159,7 +159,6 @@ describe('a11y/focus', () => {
 
     it('respects isActive guard — does nothing when inactive', () => {
       container.innerHTML = '<button id="a">A</button><button id="b">B</button>'
-      const btnA = container.querySelector('#a') as HTMLButtonElement
       const btnB = container.querySelector('#b') as HTMLButtonElement
 
       const cleanup = createFocusTrap(container, () => false)

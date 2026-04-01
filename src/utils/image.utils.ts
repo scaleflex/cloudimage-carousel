@@ -5,7 +5,8 @@ import { ImageSource } from "../core/types";
  */
 export const getFilenameWithoutExtension = (url: string): string => {
   const filename = url.split('/').pop() ?? ''
-  return filename.split('.')[0]
+  const lastDot = filename.lastIndexOf('.')
+  return lastDot > 0 ? filename.slice(0, lastDot) : filename
 }
 
 

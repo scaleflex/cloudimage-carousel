@@ -283,11 +283,19 @@ document.querySelectorAll('.demo-copy-btn').forEach((btn) => {
     const code = btn.closest('.demo-code')?.querySelector('code')
     if (!code) return
     navigator.clipboard.writeText(code.textContent || '')
-    btn.textContent = 'Copied!'
-    btn.classList.add('copied')
-    setTimeout(() => {
-      btn.textContent = 'Copy'
-      btn.classList.remove('copied')
-    }, 2000)
+      .then(() => {
+        btn.textContent = 'Copied!'
+        btn.classList.add('copied')
+        setTimeout(() => {
+          btn.textContent = 'Copy'
+          btn.classList.remove('copied')
+        }, 2000)
+      })
+      .catch(() => {
+        btn.textContent = 'Failed'
+        setTimeout(() => {
+          btn.textContent = 'Copy'
+        }, 2000)
+      })
   })
 })

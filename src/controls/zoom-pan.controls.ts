@@ -77,7 +77,12 @@ export class ZoomPanControls {
 
   constructor(carousel: CarouselRef, zoomConfig?: ZoomConfig) {
     this.carousel = carousel
-    this.imagesContainer = carousel.imagesContainer!
+
+    if (!carousel.imagesContainer) {
+      throw new Error('[ZoomPanControls] carousel.imagesContainer must exist before constructing ZoomPanControls')
+    }
+
+    this.imagesContainer = carousel.imagesContainer
     this.minZoom = zoomConfig?.minZoom ?? DEFAULT_MIN_ZOOM
     this.maxZoom = zoomConfig?.maxZoom ?? DEFAULT_MAX_ZOOM
     this.zoomStep = zoomConfig?.zoomStep ?? DEFAULT_ZOOM_STEP
@@ -100,18 +105,21 @@ export class ZoomPanControls {
   // --- Scroll hint ---
 
   private createScrollHint(): void {
+    if (!this.carousel.mainView) return
+
     this.scrollHint = document.createElement('div')
     this.scrollHint.className = CI_CAROUSEL_SCROLL_HINT_CLASS
     this.scrollHint.textContent = 'Ctrl + scroll to zoom'
     this.scrollHint.setAttribute('aria-hidden', 'true')
-    this.carousel.mainView!.appendChild(this.scrollHint)
+    this.carousel.mainView.appendChild(this.scrollHint)
   }
 
   private showScrollHint(): void {
+    if (!this.scrollHint) return
     if (this.scrollHintTimeout) clearTimeout(this.scrollHintTimeout)
-    this.scrollHint!.classList.add(CI_CAROUSEL_SCROLL_HINT_VISIBLE_CLASS)
+    this.scrollHint.classList.add(CI_CAROUSEL_SCROLL_HINT_VISIBLE_CLASS)
     this.scrollHintTimeout = setTimeout(() => {
-      this.scrollHint!.classList.remove(CI_CAROUSEL_SCROLL_HINT_VISIBLE_CLASS)
+      this.scrollHint?.classList.remove(CI_CAROUSEL_SCROLL_HINT_VISIBLE_CLASS)
     }, HINT_DURATION)
   }
 

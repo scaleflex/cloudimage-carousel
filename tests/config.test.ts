@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, no-extra-semi */
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 
 import { mergeConfig, parseDataAttributes, validateConfig, DEFAULT_CONFIG } from '../src/core/config'
@@ -115,6 +116,31 @@ describe('validateConfig', () => {
     config.zoomStep = 0
     const result = validateConfig(config)
     expect(result.zoomStep).toBe(0.3)
+  })
+
+  it('fixes invalid aspectRatio string', () => {
+    ;(config as any).aspectRatio = 'invalid'
+    const result = validateConfig(config)
+    expect(result.aspectRatio).toBe(DEFAULT_CONFIG.aspectRatio)
+    expect(console.warn).toHaveBeenCalled()
+  })
+
+  it('fixes aspectRatio with wrong format', () => {
+    ;(config as any).aspectRatio = '16:9'
+    const result = validateConfig(config)
+    expect(result.aspectRatio).toBe(DEFAULT_CONFIG.aspectRatio)
+  })
+
+  it('keeps valid aspectRatio', () => {
+    config.aspectRatio = '4/3'
+    const result = validateConfig(config)
+    expect(result.aspectRatio).toBe('4/3')
+  })
+
+  it('keeps valid aspectRatio with spaces', () => {
+    config.aspectRatio = '4 / 3'
+    const result = validateConfig(config)
+    expect(result.aspectRatio).toBe('4 / 3')
   })
 
   it('removes cloudimage config without token', () => {

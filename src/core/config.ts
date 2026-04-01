@@ -161,7 +161,7 @@ export function mergeConfig(
     ...DEFAULT_CONFIG,
     ...dataConfig,
     ...userConfig,
-    images: userConfig.images || dataConfig.images || DEFAULT_CONFIG.images,
+    images: [...(userConfig.images || dataConfig.images || DEFAULT_CONFIG.images)],
     ...(cloudimage ? { cloudimage } : {}),
   } as ResolvedConfig
 }

@@ -2,14 +2,15 @@ import React, { useRef } from 'react';
 import { CloudImageCarouselViewer } from '@cloudimage/carousel/react';
 
 const images = [
-  'https://scaleflex.cloudimg.io/v7/https://samples.scaleflex.com/hotel.jpg',
-  'https://scaleflex.cloudimg.io/v7/https://samples.scaleflex.com/birds.jpg',
-  'https://scaleflex.cloudimg.io/v7/https://samples.scaleflex.com/perfume.jpg',
-  'https://scaleflex.cloudimg.io/v7/https://samples.scaleflex.com/mountains.jpg',
-  'https://scaleflex.cloudimg.io/v7/https://samples.scaleflex.com/house.jpg',
+  'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/hotel.jpg',
+  'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/birds.jpg',
+  'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/perfume.jpg',
+  'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/mountains.jpg',
+  'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/house.jpg',
 ];
 
 export default function App() {
+  /** @type {import('react').RefObject<import('@cloudimage/carousel/react').CloudImageCarouselViewerRef | null>} */
   const carouselRef = useRef(null);
 
   return (

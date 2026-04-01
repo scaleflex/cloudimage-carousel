@@ -93,6 +93,8 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
   private bulletClickHandler: ((e: Event) => void) | null = null
   private autoplayInterval: ReturnType<typeof setInterval> | null = null
   private observer: IntersectionObserver | null = null
+  private observerCleanupRegistered: boolean = false
+  private transitionFallbackId: ReturnType<typeof setTimeout> | null = null
 
   constructor(container: string | HTMLElement, options: Partial<CloudImageCarouselConfig> = {}) {
     if (!container) {
@@ -142,6 +144,8 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
 
     this.setupFullscreenHandler()
     this.setupCloudimageResize()
+
+    this.cleanups.push(() => this.stopAutoplay())
 
     if (this.options.autoplay) {
       this.startAutoplay()
@@ -206,7 +210,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
 
     container.appendChild(this.bottomContainer)
 
-    // Live region (WCAG 4.1.3)
+    // Live region (WCAG 2.1 — 4.1.3 Status Messages)
     this.liveRegion = createLiveRegion()
     container.appendChild(this.liveRegion)
 
@@ -218,15 +222,11 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     applyContainerAria(container, this.keyboardHints.id)
   }
 
-  /** Read the CSS transition duration, caching on first use to avoid layout thrash. */
+  /** Read the CSS transition duration synchronously so it's available immediately. */
   private cacheTransitionDuration(): void {
     if (!this.container) return
-    // Defer to first slide change if styles aren't computed yet
-    requestAnimationFrame(() => {
-      if (!this.container) return
-      const raw = getComputedStyle(this.container).getPropertyValue('--ci-carousel-transition-slow') || '0.7'
-      this.transitionDurationMs = parseFloat(raw) * 1000
-    })
+    const raw = getComputedStyle(this.container).getPropertyValue('--ci-carousel-transition-slow') || '0.7'
+    this.transitionDurationMs = parseFloat(raw) * 1000
   }
 
   // ==========================================================================
@@ -245,6 +245,8 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     if (!this.imagesContainer) return
 
     this.imagesContainer.innerHTML = ''
+    const fragment = document.createDocumentFragment()
+
     this.images.forEach((image, index) => {
       const wrapper = document.createElement('div')
       wrapper.classList.add(CI_CAROUSEL_IMAGE_WRAPPER_CLASS)
@@ -268,7 +270,11 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
       img.onerror = () => {
         wrapper.classList.add(CI_CAROUSEL_IMAGE_ERROR_CLASS)
         img.alt = `Failed to load: ${image.alt}`
-        this.options.onError?.(image.src, index)
+        try {
+          this.options.onError?.(image.src, index)
+        } catch (err) {
+          console.error('[CloudImageCarousel] onError callback threw:', err)
+        }
       }
 
       wrapper.appendChild(img)
@@ -280,8 +286,10 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
         wrapper.appendChild(filename)
       }
 
-      this.imagesContainer!.appendChild(wrapper)
+      fragment.appendChild(wrapper)
     })
+
+    this.imagesContainer.appendChild(fragment)
 
     if (this.options.showThumbnails) this.renderThumbnails()
     if (this.options.showBullets) this.renderBullets()
@@ -324,14 +332,19 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
       })
     })
 
-    this.cleanups.push(() => this.observer?.disconnect())
+    if (!this.observerCleanupRegistered) {
+      this.observerCleanupRegistered = true
+      this.cleanups.push(() => this.observer?.disconnect())
+    }
 
-    const images = this.imagesContainer!.querySelectorAll<HTMLImageElement>(`.${CI_CAROUSEL_IMAGE_CLASS}`)
+    if (!this.imagesContainer) return
+    const images = this.imagesContainer.querySelectorAll<HTMLImageElement>(`.${CI_CAROUSEL_IMAGE_CLASS}`)
     images.forEach((img) => this.observer!.observe(img))
   }
 
   private loadVisibleImages(): void {
-    const images = this.imagesContainer!.querySelectorAll<HTMLImageElement>(`.${CI_CAROUSEL_IMAGE_CLASS}`)
+    if (!this.imagesContainer) return
+    const images = this.imagesContainer.querySelectorAll<HTMLImageElement>(`.${CI_CAROUSEL_IMAGE_CLASS}`)
     images.forEach((img) => {
       const src = img.dataset.src
       if (src) {
@@ -474,7 +487,9 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
       )
 
       const handleThumbsKeyDown = (e: KeyboardEvent) => {
-        this.handleGroupArrowKeys(e, this.thumbnailsContainer!)
+        if (this.thumbnailsContainer) {
+          this.handleGroupArrowKeys(e, this.thumbnailsContainer)
+        }
       }
       this.thumbnailsContainer.addEventListener('keydown', handleThumbsKeyDown)
       this.cleanups.push(() => this.thumbnailsContainer?.removeEventListener('keydown', handleThumbsKeyDown))
@@ -520,7 +535,9 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
       )
 
       const handleBulletsKeyDown = (e: KeyboardEvent) => {
-        this.handleGroupArrowKeys(e, this.bulletsContainer!)
+        if (this.bulletsContainer) {
+          this.handleGroupArrowKeys(e, this.bulletsContainer)
+        }
       }
       this.bulletsContainer.addEventListener('keydown', handleBulletsKeyDown)
       this.cleanups.push(() => this.bulletsContainer?.removeEventListener('keydown', handleBulletsKeyDown))
@@ -593,16 +610,27 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     prevSlide.classList.add(EXITING_CLASS)
 
     // 3. Force reflow so entering slide registers start position
-    currentSlide.getBoundingClientRect()
+    void currentSlide.offsetHeight
 
     // 4. Enter new slide
     currentSlide.classList.add(ACTIVE_CLASS)
 
-    // 5. Clean up exiting after transition
-    const cleanup = () => prevSlide.classList.remove(EXITING_CLASS)
+    // 5. Clean up exiting after transition (clear previous fallback first)
+    if (this.transitionFallbackId) {
+      clearTimeout(this.transitionFallbackId)
+    }
+    let cleaned = false
+    const cleanup = () => {
+      if (cleaned) return
+      cleaned = true
+      prevSlide.classList.remove(EXITING_CLASS)
+      if (this.transitionFallbackId) {
+        clearTimeout(this.transitionFallbackId)
+        this.transitionFallbackId = null
+      }
+    }
     prevSlide.addEventListener('transitionend', cleanup, { once: true })
-    const fallbackId = setTimeout(cleanup, this.transitionDurationMs + 100)
-    this.cleanups.push(() => clearTimeout(fallbackId))
+    this.transitionFallbackId = setTimeout(cleanup, this.transitionDurationMs + 100)
 
     // Update thumbnails
     if (this.options.showThumbnails && this.thumbnailsContainer) {
@@ -636,10 +664,12 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
 
     // Screen reader announcement
     const image = this.images[this.currentIndex]
-    announceToScreenReader(
-      this.liveRegion,
-      `Slide ${this.currentIndex + 1} of ${this.images.length}: ${image.alt}`,
-    )
+    if (image) {
+      announceToScreenReader(
+        this.liveRegion,
+        `Slide ${this.currentIndex + 1} of ${this.images.length}: ${image.alt}`,
+      )
+    }
 
     // Reset zoom
     if (this.zoomPanControls) {
@@ -648,7 +678,11 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     }
 
     // Fire slide change callback
-    this.options.onSlideChange?.(this.currentIndex)
+    try {
+      this.options.onSlideChange?.(this.currentIndex)
+    } catch (err) {
+      console.error('[CloudImageCarousel] onSlideChange callback threw:', err)
+    }
   }
 
   next(): void {
@@ -728,9 +762,9 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
   // ==========================================================================
 
   startAutoplay(): void {
+    if (this.autoplayInterval) return // guard against duplicate intervals
     this.isAutoplayPaused = false
     this.autoplayInterval = setInterval(() => this.next(), this.options.autoplayInterval)
-    this.cleanups.push(() => this.stopAutoplay())
   }
 
   stopAutoplay(): void {
@@ -763,6 +797,11 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
   destroy(): void {
     if (this.isDestroyed) return
     this.isDestroyed = true
+
+    if (this.transitionFallbackId) {
+      clearTimeout(this.transitionFallbackId)
+      this.transitionFallbackId = null
+    }
 
     this.cleanups.forEach((fn) => fn())
     this.cleanups = []

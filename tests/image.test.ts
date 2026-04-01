@@ -12,7 +12,7 @@ describe('getFilenameWithoutExtension', () => {
   })
 
   it('handles filename with multiple dots', () => {
-    expect(getFilenameWithoutExtension('https://example.com/my.photo.png')).toBe('my')
+    expect(getFilenameWithoutExtension('https://example.com/my.photo.png')).toBe('my.photo')
   })
 
   it('handles empty string', () => {

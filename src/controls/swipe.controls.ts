@@ -90,8 +90,8 @@ export class SwipeControls {
   }
 
   private get isCurrentSlideZoomed(): boolean {
-    const scale = this.zoomPanControls?.getScale()
-    return scale ? scale > 1 : false
+    const scale = this.zoomPanControls?.getScale() ?? 1
+    return scale > 1
   }
 
   destroy(): void {

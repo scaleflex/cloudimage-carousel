@@ -35,7 +35,8 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src/ tests/ --ext .ts,.tsx",
     "format": "prettier --write \"**/*.{ts,js,json,css,md}\"",
-    "format:check": "prettier --check \"**/*.{ts,js,json,css,md}\""
+    "format:check": "prettier --check \"**/*.{ts,js,json,css,md}\"",
+    "prepublishOnly": "npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "keywords": [
     "carousel",
@@ -94,6 +95,8 @@
     "vite": "^5.4.11",
     "vitest": "^2.1.8"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css"
+  ],
   "dependencies": {}
 }
