@@ -449,6 +449,11 @@
   bottom: var(--ci-carousel-controls-offset);
 }
 
+/* Align filename text vertically with bottom-positioned controls */
+.ci-carousel-main:has(.ci-carousel-controls--bottom) .ci-carousel-filename {
+  padding-bottom: calc(var(--ci-carousel-controls-offset) + (var(--ci-carousel-btn-size) - var(--ci-carousel-filename-size)) / 2);
+}
+
 /* Controls modifier — applied when carousel has controls enabled */
 .ci-carousel-has-controls .ci-carousel-main {
   cursor: pointer;
