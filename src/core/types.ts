@@ -74,6 +74,8 @@ export interface CloudImageCarouselConfig {
   theme?: Theme
   /** Slide transition effect */
   transitionEffect?: TransitionEffect
+  /** Coverflow layout — show 2 neighbor slides on each side of the active one (openbook style). Overrides transitionEffect when true. */
+  showCoverflow?: boolean
   /** Aspect ratio of the main view (e.g. '16/9', '4/3', '1/1'). Default: '16/9' */
   aspectRatio?: string
   /** Minimum zoom level (default: 1) */

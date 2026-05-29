@@ -55,7 +55,7 @@
   --ci-carousel-filename-size: 13px;
 
   /* Focus */
-  --ci-carousel-focus-color: #2563EB;
+  --ci-carousel-focus-color: #2563eb;
 
   /* Transitions */
   --ci-carousel-easing: cubic-bezier(0.16, 1, 0.3, 1);
@@ -65,6 +65,26 @@
 
   /* Fullscreen */
   --ci-carousel-fullscreen-bg: rgba(0, 0, 0, 0.95);
+
+  /* Coverflow (openbook layout)
+     Scale shrinks each wrapper so all 5 visible slides fit alongside one another
+     within the carousel's frame. Translate is given relative to the wrapper's
+     own (un-scaled) width; with active at 60% scale, ~50% translate stations
+     the near neighbor so its inner edge just behind the active slide. */
+  --ci-carousel-coverflow-perspective: 1400px;
+  --ci-carousel-coverflow-scale-active: 0.62;
+  --ci-carousel-coverflow-translate-near: 47%;
+  --ci-carousel-coverflow-translate-far: 82%;
+  --ci-carousel-coverflow-scale-near: 0.5;
+  --ci-carousel-coverflow-scale-far: 0.4;
+  --ci-carousel-coverflow-opacity-near: 0.9;
+  --ci-carousel-coverflow-opacity-far: 0.55;
+  --ci-carousel-coverflow-rotate-near: 22deg;
+  --ci-carousel-coverflow-rotate-far: 32deg;
+  /* Visual de-emphasis on neighbors — dims and slightly desaturates so the
+     active slide reads as the focal point. */
+  --ci-carousel-coverflow-filter-near: brightness(0.7) saturate(0.85);
+  --ci-carousel-coverflow-filter-far: brightness(0.55) saturate(0.7);
 }
 
 /* ==========================================================================
@@ -203,8 +223,9 @@
 .slide.active {
   transform: translateX(0);
   opacity: 1;
-  transition: transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
-              opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+  transition:
+    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
 }
 
 /* Resting position — no transition, instant snap */
@@ -222,15 +243,17 @@
 [data-direction='next'] .slide.exiting {
   transform: translateX(-100%);
   opacity: 0;
-  transition: transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
-              opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+  transition:
+    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
 }
 
 [data-direction='prev'] .slide.exiting {
   transform: translateX(100%);
   opacity: 0;
-  transition: transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
-              opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+  transition:
+    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
 }
 
 /* --- Fade: crossfade (no direction needed) --- */
@@ -254,8 +277,9 @@
 .zoom.active {
   transform: scale(1);
   opacity: 1;
-  transition: transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
-              opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+  transition:
+    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
 }
 
 [data-direction='next'] .zoom:not(.active):not(.exiting) {
@@ -271,15 +295,17 @@
 [data-direction='next'] .zoom.exiting {
   transform: scale(1.2);
   opacity: 0;
-  transition: transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
-              opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+  transition:
+    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
 }
 
 [data-direction='prev'] .zoom.exiting {
   transform: scale(0.8);
   opacity: 0;
-  transition: transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
-              opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+  transition:
+    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
 }
 
 /* --- Flip: 3D Y-axis rotation + direction --- */
@@ -292,8 +318,9 @@
 .flip.active {
   transform: perspective(1200px) rotateY(0deg);
   opacity: 1;
-  transition: transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
-              opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+  transition:
+    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
 }
 
 [data-direction='next'] .flip:not(.active):not(.exiting) {
@@ -309,15 +336,111 @@
 [data-direction='next'] .flip.exiting {
   transform: perspective(1200px) rotateY(90deg);
   opacity: 0;
-  transition: transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
-              opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+  transition:
+    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
 }
 
 [data-direction='prev'] .flip.exiting {
   transform: perspective(1200px) rotateY(-90deg);
   opacity: 0;
-  transition: transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
-              opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+  transition:
+    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+/* ==========================================================================
+   4b. Coverflow (openbook) layout
+   Five visible slides simultaneously: active + 2 neighbors on each side.
+   Position classes are applied by JS based on offset from currentIndex.
+   ========================================================================== */
+
+.ci-carousel-images-container.coverflow-mode {
+  /* Neighbors translate past the active slide; don't clip them. */
+  overflow: visible;
+  perspective: var(--ci-carousel-coverflow-perspective);
+}
+
+/* Override clipping on the carousel ancestors when coverflow is enabled —
+   neighbor slides translate outside the active slide's bounds and need to
+   render past the standard 1:1 / 16:9 frame. */
+.ci-carousel.ci-carousel-has-coverflow,
+.ci-carousel.ci-carousel-has-coverflow .ci-carousel-main {
+  overflow: visible;
+}
+
+.ci-carousel-image-wrapper.coverflow {
+  visibility: visible;
+  opacity: 0;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  transition:
+    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    filter var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+.coverflow.coverflow-active {
+  transform: translateX(0) scale(var(--ci-carousel-coverflow-scale-active)) rotateY(0);
+  opacity: 1;
+  filter: none;
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.coverflow.coverflow-prev {
+  transform: translateX(calc(var(--ci-carousel-coverflow-translate-near) * -1))
+    scale(var(--ci-carousel-coverflow-scale-near)) rotateY(var(--ci-carousel-coverflow-rotate-near));
+  opacity: var(--ci-carousel-coverflow-opacity-near);
+  filter: var(--ci-carousel-coverflow-filter-near);
+  z-index: 4;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.coverflow.coverflow-next {
+  transform: translateX(var(--ci-carousel-coverflow-translate-near)) scale(var(--ci-carousel-coverflow-scale-near))
+    rotateY(calc(var(--ci-carousel-coverflow-rotate-near) * -1));
+  opacity: var(--ci-carousel-coverflow-opacity-near);
+  filter: var(--ci-carousel-coverflow-filter-near);
+  z-index: 4;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.coverflow.coverflow-far-prev {
+  transform: translateX(calc(var(--ci-carousel-coverflow-translate-far) * -1))
+    scale(var(--ci-carousel-coverflow-scale-far)) rotateY(var(--ci-carousel-coverflow-rotate-far));
+  opacity: var(--ci-carousel-coverflow-opacity-far);
+  filter: var(--ci-carousel-coverflow-filter-far);
+  z-index: 3;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.coverflow.coverflow-far-next {
+  transform: translateX(var(--ci-carousel-coverflow-translate-far)) scale(var(--ci-carousel-coverflow-scale-far))
+    rotateY(calc(var(--ci-carousel-coverflow-rotate-far) * -1));
+  opacity: var(--ci-carousel-coverflow-opacity-far);
+  filter: var(--ci-carousel-coverflow-filter-far);
+  z-index: 3;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Hover on a neighbor lifts the dim/desaturate so the user sees what they're about to click. */
+.coverflow.coverflow-prev:hover,
+.coverflow.coverflow-next:hover,
+.coverflow.coverflow-far-prev:hover,
+.coverflow.coverflow-far-next:hover {
+  filter: brightness(0.95) saturate(1);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ci-carousel-image-wrapper.coverflow {
+    transition: none;
+  }
 }
 
 /* ==========================================================================
@@ -451,7 +574,9 @@
 
 /* Align filename text vertically with bottom-positioned controls */
 .ci-carousel-main:has(.ci-carousel-controls--bottom) .ci-carousel-filename {
-  padding-bottom: calc(var(--ci-carousel-controls-offset) + (var(--ci-carousel-btn-size) - var(--ci-carousel-filename-size)) / 2);
+  padding-bottom: calc(
+    var(--ci-carousel-controls-offset) + (var(--ci-carousel-btn-size) - var(--ci-carousel-filename-size)) / 2
+  );
 }
 
 /* Controls modifier — applied when carousel has controls enabled */
@@ -588,8 +713,9 @@
   letter-spacing: 0.3px;
   opacity: 0;
   transform: translateY(8px);
-  transition: opacity 0.4s var(--ci-carousel-easing),
-              transform 0.4s var(--ci-carousel-easing);
+  transition:
+    opacity 0.4s var(--ci-carousel-easing),
+    transform 0.4s var(--ci-carousel-easing);
 }
 
 .ci-carousel-image-wrapper:hover .ci-carousel-filename {

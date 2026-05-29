@@ -22,6 +22,7 @@ export function initConfigurator(): void {
   const cfgFilenames = document.getElementById('cfg-filenames') as HTMLInputElement
   const cfgAutoplay = document.getElementById('cfg-autoplay') as HTMLInputElement
   const cfgCycle = document.getElementById('cfg-cycle') as HTMLInputElement
+  const cfgCoverflow = document.getElementById('cfg-coverflow') as HTMLInputElement
   const cfgTheme = document.getElementById('cfg-theme') as HTMLSelectElement
   const cfgTransition = document.getElementById('cfg-transition') as HTMLSelectElement
   const cfgControlsPosition = document.getElementById('cfg-controls-position') as HTMLSelectElement
@@ -40,6 +41,7 @@ export function initConfigurator(): void {
       showFilenames: cfgFilenames.checked,
       autoplay: cfgAutoplay.checked,
       cycle: cfgCycle.checked,
+      showCoverflow: cfgCoverflow.checked,
       theme: cfgTheme.value as 'light' | 'dark',
       transitionEffect: cfgTransition.value as 'fade' | 'slide' | 'zoom' | 'flip',
       controlsPosition: cfgControlsPosition.value as 'center' | 'bottom',
@@ -58,6 +60,7 @@ export function initConfigurator(): void {
     if (config.showFilenames) opts.push(`  showFilenames: true,`)
     if (config.autoplay) opts.push(`  autoplay: true,`)
     if (!config.cycle) opts.push(`  cycle: false,`)
+    if (config.showCoverflow) opts.push(`  showCoverflow: true,`)
     if (config.theme !== 'light') opts.push(`  theme: '${config.theme}',`)
     if (config.transitionEffect !== 'fade') opts.push(`  transitionEffect: '${config.transitionEffect}',`)
     if (config.controlsPosition !== 'center') opts.push(`  controlsPosition: '${config.controlsPosition}',`)
@@ -102,7 +105,7 @@ export function initConfigurator(): void {
   }
 
   // Bind all controls to rebuild
-  ;[cfgThumbnails, cfgBullets, cfgControls, cfgFilenames, cfgAutoplay, cfgCycle].forEach((el) =>
+  ;[cfgThumbnails, cfgBullets, cfgControls, cfgFilenames, cfgAutoplay, cfgCycle, cfgCoverflow].forEach((el) =>
     el.addEventListener('change', rebuild),
   )
   ;[cfgTheme, cfgTransition, cfgControlsPosition].forEach((el) => el.addEventListener('change', rebuild))
