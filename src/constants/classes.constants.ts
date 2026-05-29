@@ -28,6 +28,15 @@ export const ACTIVE_CLASS = 'active' as const
 export const EXITING_CLASS = 'exiting' as const
 export const ZOOMED_CLASS = 'zoomed' as const
 
+// Coverflow layout classes
+export const CI_CAROUSEL_COVERFLOW_CLASS = 'coverflow' as const
+export const CI_CAROUSEL_COVERFLOW_ACTIVE_CLASS = 'coverflow-active' as const
+export const CI_CAROUSEL_COVERFLOW_PREV_CLASS = 'coverflow-prev' as const
+export const CI_CAROUSEL_COVERFLOW_NEXT_CLASS = 'coverflow-next' as const
+export const CI_CAROUSEL_COVERFLOW_FAR_PREV_CLASS = 'coverflow-far-prev' as const
+export const CI_CAROUSEL_COVERFLOW_FAR_NEXT_CLASS = 'coverflow-far-next' as const
+export const CI_CAROUSEL_HAS_COVERFLOW_CLASS = 'ci-carousel-has-coverflow' as const
+
 // Modifier classes
 export const CI_CAROUSEL_HAS_CONTROLS_CLASS = 'ci-carousel-has-controls' as const
 export const CI_CAROUSEL_HAS_THUMBNAILS_CLASS = 'ci-carousel-has-thumbnails' as const

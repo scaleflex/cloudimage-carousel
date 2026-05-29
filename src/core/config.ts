@@ -25,6 +25,7 @@ export interface ResolvedConfig {
   controlsPosition: ControlsPosition
   theme: Theme
   transitionEffect: TransitionEffect
+  showCoverflow: boolean
   aspectRatio: string
   zoomMin: number
   zoomMax: number
@@ -50,6 +51,7 @@ const DEFAULT_CONFIG: ResolvedConfig = {
   controlsPosition: 'center',
   theme: 'light',
   transitionEffect: TRANSITION_EFFECTS.FADE as TransitionEffect,
+  showCoverflow: false,
   aspectRatio: '16/9',
   zoomMin: 1,
   zoomMax: 4,
@@ -80,6 +82,7 @@ const DATA_ATTR_MAP: Record<string, DataAttrMapping> = {
   'data-ci-carousel-controls-position': { key: 'controlsPosition', type: 'string' },
   'data-ci-carousel-theme': { key: 'theme', type: 'string' },
   'data-ci-carousel-transition': { key: 'transitionEffect', type: 'string' },
+  'data-ci-carousel-show-coverflow': { key: 'showCoverflow', type: 'boolean' },
   'data-ci-carousel-aspect-ratio': { key: 'aspectRatio', type: 'string' },
   'data-ci-carousel-zoom-min': { key: 'zoomMin', type: 'number' },
   'data-ci-carousel-zoom-max': { key: 'zoomMax', type: 'number' },
@@ -153,9 +156,7 @@ export function mergeConfig(
 ): ResolvedConfig {
   // Deep-merge cloudimage sub-object (user config wins over data attributes)
   const cloudimage =
-    dataConfig.cloudimage || userConfig.cloudimage
-      ? { ...dataConfig.cloudimage, ...userConfig.cloudimage }
-      : undefined
+    dataConfig.cloudimage || userConfig.cloudimage ? { ...dataConfig.cloudimage, ...userConfig.cloudimage } : undefined
 
   return {
     ...DEFAULT_CONFIG,

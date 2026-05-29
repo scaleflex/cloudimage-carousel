@@ -87,6 +87,20 @@ carousel.init()</code></pre>
       data-ci-carousel-controls-position="center"
     ></div>
 
+    <!-- ================================================================
+         Example 3: Coverflow (openbook) layout
+         ================================================================ -->
+    <h2>3. Coverflow (openbook) layout</h2>
+    <pre><code>new CloudImageCarousel('#carousel-coverflow', {
+  images: [...],
+  showCoverflow: true,    // active slide centered, 2 neighbors each side
+  cycle: true,            // wraps at boundaries — no grey tiles
+  showBullets: true,
+  showThumbnails: false,
+})</code></pre>
+
+    <div id="carousel-coverflow"></div>
+
     <script src="/dist/carousel.min.js"></script>
     <script>
       // Method 1: JavaScript API
@@ -121,6 +135,26 @@ carousel.init()</code></pre>
 
       // Method 2: Data attributes — single line auto-discovers all [data-ci-carousel-images] elements
       CloudImageCarousel.autoInit()
+
+      // Method 3: Coverflow layout — active slide centered with 2 neighbors each side
+      const carouselCoverflow = new CloudImageCarousel('#carousel-coverflow', {
+        showCoverflow: true,
+        cycle: true,
+        showBullets: true,
+        showThumbnails: false,
+        showControls: true,
+        images: [
+          'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/hotel.jpg',
+          'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/birds.jpg',
+          'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/perfume.jpg',
+          'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/mountains.jpg',
+          'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/house.jpg',
+          'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/frog.png',
+          'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/andromeda.jpg',
+          'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/earth1.jpg',
+        ],
+      })
+      carouselCoverflow.init()
     </script>
   </body>
 </html>

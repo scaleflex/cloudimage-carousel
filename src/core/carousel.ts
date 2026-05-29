@@ -12,25 +12,32 @@ import {
   CI_CAROUSEL_BULLETS_CONTAINER_CLASS,
   CI_CAROUSEL_BULLET_CLASS,
   CI_CAROUSEL_CONTROLS_CLASS,
+  CI_CAROUSEL_COVERFLOW_ACTIVE_CLASS,
+  CI_CAROUSEL_COVERFLOW_CLASS,
+  CI_CAROUSEL_COVERFLOW_FAR_NEXT_CLASS,
+  CI_CAROUSEL_COVERFLOW_FAR_PREV_CLASS,
+  CI_CAROUSEL_COVERFLOW_NEXT_CLASS,
+  CI_CAROUSEL_COVERFLOW_PREV_CLASS,
   CI_CAROUSEL_FILENAME_CLASS,
   CI_CAROUSEL_FULLSCREEN_CLASS,
   CI_CAROUSEL_HAS_BULLETS_CLASS,
   CI_CAROUSEL_HAS_CONTROLS_CLASS,
+  CI_CAROUSEL_HAS_COVERFLOW_CLASS,
   CI_CAROUSEL_HAS_THUMBNAILS_CLASS,
+  CI_CAROUSEL_IMAGES_CONTAINER_CLASS,
   CI_CAROUSEL_IMAGE_CLASS,
   CI_CAROUSEL_IMAGE_ERROR_CLASS,
   CI_CAROUSEL_IMAGE_WRAPPER_CLASS,
-  CI_CAROUSEL_IMAGES_CONTAINER_CLASS,
   CI_CAROUSEL_IS_FULLSCREEN_CLASS,
   CI_CAROUSEL_MAIN_CLASS,
   CI_CAROUSEL_THEME_DARK_CLASS,
-  CI_CAROUSEL_THUMBNAIL_CLASS,
   CI_CAROUSEL_THUMBNAILS_CLASS,
+  CI_CAROUSEL_THUMBNAIL_CLASS,
   CI_HOST_CONTAINER_CLASS,
   EXITING_CLASS,
 } from '../constants/classes.constants'
-import { CLICK_EVENT } from '../constants/events.constants'
 import { KEYBOARD_KEYS, PLACEHOLDER_SVG } from '../constants/controls.constants'
+import { CLICK_EVENT } from '../constants/events.constants'
 import { ICONS } from '../constants/icons.constants'
 import { CarouselControls } from '../controls/controls'
 import { SwipeControls } from '../controls/swipe.controls'
@@ -42,14 +49,7 @@ import { getFilenameWithoutExtension, normalizeImage } from '../utils/image.util
 
 import type { ResolvedConfig } from './config'
 import { mergeConfig, parseDataAttributes, validateConfig } from './config'
-import type {
-  CloudImageCarouselConfig,
-  CloudImageCarouselInstance,
-  ImageSource,
-  NormalizedImage,
-  Theme,
-} from './types'
-
+import type { CloudImageCarouselConfig, CloudImageCarouselInstance, ImageSource, NormalizedImage, Theme } from './types'
 
 class CloudImageCarousel implements CloudImageCarouselInstance {
   // --- Public state (readonly via interface) ---
@@ -105,7 +105,8 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
 
     if (!this.container || !(this.container instanceof HTMLElement)) {
       throw new Error(
-        `Invalid container: ${typeof container === 'string' ? `Element "${container}" not found` : 'Container must be a valid HTML element'
+        `Invalid container: ${
+          typeof container === 'string' ? `Element "${container}" not found` : 'Container must be a valid HTML element'
         }`,
       )
     }
@@ -121,7 +122,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
   // ==========================================================================
 
   init(): void {
-    this.cloudimageEnabled = !!(this.options.cloudimage?.token)
+    this.cloudimageEnabled = !!this.options.cloudimage?.token
 
     this.createStructure()
     this.cacheTransitionDuration()
@@ -131,12 +132,16 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
       this.controls = new CarouselControls(this)
       this.cleanups.push(() => this.controls?.destroy())
 
-      this.zoomPanControls = new ZoomPanControls(this, {
-        minZoom: this.options.zoomMin,
-        maxZoom: this.options.zoomMax,
-        zoomStep: this.options.zoomStep,
-      })
-      this.cleanups.push(() => this.zoomPanControls?.destroy())
+      // Zoom/pan is disabled in coverflow mode — zooming the active slide while
+      // neighbors are visible would look broken, and swipe is the primary gesture.
+      if (!this.options.showCoverflow) {
+        this.zoomPanControls = new ZoomPanControls(this, {
+          minZoom: this.options.zoomMin,
+          maxZoom: this.options.zoomMax,
+          zoomStep: this.options.zoomStep,
+        })
+        this.cleanups.push(() => this.zoomPanControls?.destroy())
+      }
     }
 
     this.swipeControls = new SwipeControls(this)
@@ -172,6 +177,11 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     this.imagesContainer.dataset.direction = 'next'
     this.imagesContainer.setAttribute('role', 'list')
     this.imagesContainer.setAttribute('aria-label', 'Slides')
+
+    if (this.options.showCoverflow) {
+      this.imagesContainer.classList.add('coverflow-mode')
+      container.classList.add(CI_CAROUSEL_HAS_COVERFLOW_CLASS)
+    }
 
     this.mainView.appendChild(this.imagesContainer)
 
@@ -250,13 +260,14 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     this.images.forEach((image, index) => {
       const wrapper = document.createElement('div')
       wrapper.classList.add(CI_CAROUSEL_IMAGE_WRAPPER_CLASS)
-      wrapper.classList.add(this.options.transitionEffect)
+      wrapper.classList.add(this.options.showCoverflow ? CI_CAROUSEL_COVERFLOW_CLASS : this.options.transitionEffect)
 
       wrapper.setAttribute('role', 'listitem')
       wrapper.setAttribute('aria-roledescription', 'slide')
       wrapper.setAttribute('aria-label', `Slide ${index + 1} of ${this.images.length}: ${image.alt}`)
+      wrapper.dataset.index = String(index)
 
-      if (index === this.currentIndex) {
+      if (index === this.currentIndex && !this.options.showCoverflow) {
         wrapper.classList.add(ACTIVE_CLASS)
       }
 
@@ -290,6 +301,11 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     })
 
     this.imagesContainer.appendChild(fragment)
+
+    if (this.options.showCoverflow) {
+      this.applyCoverflowPositions()
+      this.setupCoverflowClickHandler()
+    }
 
     if (this.options.showThumbnails) this.renderThumbnails()
     if (this.options.showBullets) this.renderBullets()
@@ -392,11 +408,8 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
 
     const getZoom = () => this.zoomPanControls?.getScale() ?? 1
 
-    const { destroy } = createContainerResizeHandler(
-      this.mainView,
-      this.options.cloudimage,
-      getZoom,
-      () => this.refreshCloudimageUrls(),
+    const { destroy } = createContainerResizeHandler(this.mainView, this.options.cloudimage, getZoom, () =>
+      this.refreshCloudimageUrls(),
     )
     this.cleanups.push(destroy)
 
@@ -482,9 +495,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
         }
       }
       this.thumbnailsContainer.addEventListener(CLICK_EVENT, this.thumbnailClickHandler)
-      this.cleanups.push(() =>
-        this.thumbnailsContainer?.removeEventListener(CLICK_EVENT, this.thumbnailClickHandler!),
-      )
+      this.cleanups.push(() => this.thumbnailsContainer?.removeEventListener(CLICK_EVENT, this.thumbnailClickHandler!))
 
       const handleThumbsKeyDown = (e: KeyboardEvent) => {
         if (this.thumbnailsContainer) {
@@ -530,9 +541,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
         }
       }
       this.bulletsContainer.addEventListener(CLICK_EVENT, this.bulletClickHandler)
-      this.cleanups.push(() =>
-        this.bulletsContainer?.removeEventListener(CLICK_EVENT, this.bulletClickHandler!),
-      )
+      this.cleanups.push(() => this.bulletsContainer?.removeEventListener(CLICK_EVENT, this.bulletClickHandler!))
 
       const handleBulletsKeyDown = (e: KeyboardEvent) => {
         if (this.bulletsContainer) {
@@ -596,6 +605,12 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
   private updateSlide(prevIndex: number, direction: 'next' | 'prev' = 'next'): void {
     if (!this.imagesContainer) return
 
+    if (this.options.showCoverflow) {
+      this.applyCoverflowPositions()
+      this.applyPostSlideChangeSideEffects(prevIndex)
+      return
+    }
+
     const slides = this.imagesContainer.children
     const prevSlide = slides[prevIndex] as HTMLElement | undefined
     const currentSlide = slides[this.currentIndex] as HTMLElement | undefined
@@ -632,6 +647,15 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     prevSlide.addEventListener('transitionend', cleanup, { once: true })
     this.transitionFallbackId = setTimeout(cleanup, this.transitionDurationMs + 100)
 
+    this.applyPostSlideChangeSideEffects(prevIndex)
+  }
+
+  /**
+   * Shared post-slide-change updates: thumbnail/bullet active swap, screen-reader
+   * announcement, zoom reset, and the onSlideChange callback. Called from both
+   * the standard transition lifecycle and the coverflow branch.
+   */
+  private applyPostSlideChangeSideEffects(prevIndex: number): void {
     // Update thumbnails
     if (this.options.showThumbnails && this.thumbnailsContainer) {
       const thumbs = this.thumbnailsContainer.children
@@ -665,10 +689,7 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     // Screen reader announcement
     const image = this.images[this.currentIndex]
     if (image) {
-      announceToScreenReader(
-        this.liveRegion,
-        `Slide ${this.currentIndex + 1} of ${this.images.length}: ${image.alt}`,
-      )
+      announceToScreenReader(this.liveRegion, `Slide ${this.currentIndex + 1} of ${this.images.length}: ${image.alt}`)
     }
 
     // Reset zoom
@@ -683,6 +704,114 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
     } catch (err) {
       console.error('[CloudImageCarousel] onSlideChange callback threw:', err)
     }
+  }
+
+  // ==========================================================================
+  // Coverflow layout
+  // ==========================================================================
+
+  /**
+   * Coverflow position classes, by offset from currentIndex.
+   * Order matters for the loop below: removeAll first, then assign by offset.
+   */
+  private static readonly COVERFLOW_POSITION_CLASSES = [
+    CI_CAROUSEL_COVERFLOW_ACTIVE_CLASS,
+    CI_CAROUSEL_COVERFLOW_PREV_CLASS,
+    CI_CAROUSEL_COVERFLOW_NEXT_CLASS,
+    CI_CAROUSEL_COVERFLOW_FAR_PREV_CLASS,
+    CI_CAROUSEL_COVERFLOW_FAR_NEXT_CLASS,
+  ]
+
+  /**
+   * Apply position classes to all slides based on their signed offset from currentIndex.
+   * With cycle: true, the offset wraps via modulo so first/last slides display the
+   * actual neighbor images instead of empty placeholders. With cycle: false, slides
+   * past the array bounds get no class and remain hidden.
+   * Neighbor depth is clamped to floor((N-1)/2) so each slide gets at most one class
+   * when there are fewer than 5 images.
+   */
+  private applyCoverflowPositions(): void {
+    if (!this.imagesContainer) return
+
+    const slides = Array.from(this.imagesContainer.children) as HTMLElement[]
+    const n = this.images.length
+    if (n === 0) return
+
+    const maxDepth = Math.min(2, Math.floor((n - 1) / 2))
+    const cycle = this.options.cycle
+
+    // Map slide index → signed offset (-2..+2), or null if out of visible range.
+    const offsetByIndex = new Map<number, number>()
+    for (let d = -maxDepth; d <= maxDepth; d++) {
+      let target = this.currentIndex + d
+      if (target < 0 || target >= n) {
+        if (!cycle) continue
+        target = ((target % n) + n) % n
+      }
+      // First write wins — when N is small and the same slide could land in
+      // multiple offsets, prefer the closer one (we iterate from -maxDepth up).
+      if (!offsetByIndex.has(target)) {
+        offsetByIndex.set(target, d)
+      }
+    }
+
+    slides.forEach((slide, index) => {
+      slide.classList.remove(...CloudImageCarousel.COVERFLOW_POSITION_CLASSES)
+
+      const offset = offsetByIndex.get(index)
+      let className: string | null = null
+      switch (offset) {
+        case 0:
+          className = CI_CAROUSEL_COVERFLOW_ACTIVE_CLASS
+          break
+        case -1:
+          className = CI_CAROUSEL_COVERFLOW_PREV_CLASS
+          break
+        case 1:
+          className = CI_CAROUSEL_COVERFLOW_NEXT_CLASS
+          break
+        case -2:
+          className = CI_CAROUSEL_COVERFLOW_FAR_PREV_CLASS
+          break
+        case 2:
+          className = CI_CAROUSEL_COVERFLOW_FAR_NEXT_CLASS
+          break
+      }
+      if (className) {
+        slide.classList.add(className)
+      }
+
+      const isActive = offset === 0
+      if (isActive) {
+        slide.removeAttribute('aria-hidden')
+        slide.removeAttribute('inert')
+      } else {
+        slide.setAttribute('aria-hidden', 'true')
+        slide.setAttribute('inert', '')
+      }
+    })
+  }
+
+  private coverflowClickHandler: ((e: Event) => void) | null = null
+
+  private setupCoverflowClickHandler(): void {
+    if (!this.imagesContainer || this.coverflowClickHandler) return
+
+    this.coverflowClickHandler = (e: Event) => {
+      const wrapper = (e.target as HTMLElement).closest(`.${CI_CAROUSEL_IMAGE_WRAPPER_CLASS}`) as HTMLElement | null
+      if (!wrapper || !wrapper.dataset.index) return
+      const idx = parseInt(wrapper.dataset.index, 10)
+      if (!Number.isFinite(idx) || idx === this.currentIndex) return
+      this.goToSlide(idx)
+    }
+
+    this.imagesContainer.addEventListener(CLICK_EVENT, this.coverflowClickHandler)
+    this.cleanups.push(() => {
+      if (this.imagesContainer && this.coverflowClickHandler) {
+        this.imagesContainer.removeEventListener(CLICK_EVENT, this.coverflowClickHandler)
+      }
+      this.coverflowClickHandler = null
+    })
   }
 
   next(): void {
