@@ -63,6 +63,12 @@
   --ci-carousel-transition-normal: 0.5s;
   --ci-carousel-transition-slow: 0.7s;
 
+  /* Overlap (cover) transition — incoming slide rides over the current one,
+     which recedes with a subtle parallax (scale down + dim + slight shift). */
+  --ci-carousel-overlap-scale: 0.94;
+  --ci-carousel-overlap-opacity: 0.55;
+  --ci-carousel-overlap-shift: 8%;
+
   /* Fullscreen */
   --ci-carousel-fullscreen-bg: rgba(0, 0, 0, 0.95);
 
@@ -73,14 +79,16 @@
      the near neighbor so its inner edge just behind the active slide. */
   --ci-carousel-coverflow-perspective: 1400px;
   --ci-carousel-coverflow-scale-active: 0.62;
-  --ci-carousel-coverflow-translate-near: 47%;
-  --ci-carousel-coverflow-translate-far: 82%;
-  --ci-carousel-coverflow-scale-near: 0.5;
+  --ci-carousel-coverflow-translate-near: 50%;
+  --ci-carousel-coverflow-translate-far: 85%;
+  --ci-carousel-coverflow-scale-near: 0.44;
   --ci-carousel-coverflow-scale-far: 0.4;
   --ci-carousel-coverflow-opacity-near: 0.9;
   --ci-carousel-coverflow-opacity-far: 0.55;
   --ci-carousel-coverflow-rotate-near: 22deg;
   --ci-carousel-coverflow-rotate-far: 32deg;
+  /* Rounded corners on the full-bleed (cover) coverflow slides. */
+  --ci-carousel-coverflow-radius: 8px;
   /* Visual de-emphasis on neighbors — dims and slightly desaturates so the
      active slide reads as the focal point. */
   --ci-carousel-coverflow-filter-near: brightness(0.7) saturate(0.85);
@@ -349,6 +357,82 @@
     opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
 }
 
+/* --- Overlap: incoming slide covers the current one (with parallax) --- */
+
+/* Stacking: incoming (active) rides above the receding (exiting) slide. */
+.overlap {
+  z-index: 0;
+}
+
+.overlap.exiting {
+  z-index: 1;
+}
+
+.overlap.active {
+  transform: translateX(0);
+  opacity: 1;
+  z-index: 2;
+  transition:
+    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+/* Resting position — off-screen, instant snap (no transition). */
+[data-direction='next'] .overlap:not(.active):not(.exiting) {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+[data-direction='prev'] .overlap:not(.active):not(.exiting) {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+/* Exit — the current image stays put and recedes (parallax), it does NOT
+   slide out. The attribute + double-class selector outranks the base
+   `.ci-carousel-image-wrapper.exiting { opacity: 0 }` rule. */
+[data-direction='next'] .overlap.exiting {
+  transform: translateX(calc(var(--ci-carousel-overlap-shift) * -1)) scale(var(--ci-carousel-overlap-scale));
+  opacity: var(--ci-carousel-overlap-opacity);
+  transition:
+    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+[data-direction='prev'] .overlap.exiting {
+  transform: translateX(var(--ci-carousel-overlap-shift)) scale(var(--ci-carousel-overlap-scale));
+  opacity: var(--ci-carousel-overlap-opacity);
+  transition:
+    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
+}
+
+/* Live drag: follow the pointer 1:1 with no easing, and promote to a
+   compositor layer only while actively dragging. */
+.ci-carousel-images-container.ci-carousel-swiping .overlap {
+  transition: none;
+  will-change: transform;
+}
+
+/* Draggable affordance — only in overlap mode (coverflow slides carry the
+   `coverflow` class, not `overlap`, so they're unaffected). */
+.ci-carousel-images-container:has(> .overlap) {
+  cursor: grab;
+}
+
+.ci-carousel-images-container.ci-carousel-swiping {
+  cursor: grabbing;
+}
+
+/* The incoming slide being dragged in must be paintable (base wrappers are
+   visibility:hidden) and layered above the current (.active, z-index 2) slide —
+   regardless of DOM order (prev neighbor sits earlier in the DOM). */
+.overlap.drag-incoming {
+  visibility: visible;
+  opacity: 1;
+  z-index: 3;
+}
+
 /* ==========================================================================
    4b. Coverflow (openbook) layout
    Five visible slides simultaneously: active + 2 neighbors on each side.
@@ -374,14 +458,25 @@
   opacity: 0;
   pointer-events: none;
   transform-style: preserve-3d;
+  /* Only `translate` is transitioned — `scale` is intentionally omitted so the
+     size change snaps instantly (slides move without the grow/shrink animation). */
   transition:
-    transform var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
+    translate var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
     opacity var(--ci-carousel-transition-slow) var(--ci-carousel-easing),
     filter var(--ci-carousel-transition-slow) var(--ci-carousel-easing);
 }
 
+/* Coverflow slides are full-bleed rounded rectangles — fill the frame (cropping
+   off-ratio images) and round the corners. Scoped to coverflow only; other
+   layouts keep the default object-fit: contain with square corners. */
+.ci-carousel-image-wrapper.coverflow img {
+  object-fit: cover;
+  border-radius: var(--ci-carousel-coverflow-radius);
+}
+
 .coverflow.coverflow-active {
-  transform: translateX(0) scale(var(--ci-carousel-coverflow-scale-active)) rotateY(0);
+  translate: 0;
+  scale: var(--ci-carousel-coverflow-scale-active);
   opacity: 1;
   filter: none;
   z-index: 5;
@@ -389,8 +484,8 @@
 }
 
 .coverflow.coverflow-prev {
-  transform: translateX(calc(var(--ci-carousel-coverflow-translate-near) * -1))
-    scale(var(--ci-carousel-coverflow-scale-near)) rotateY(var(--ci-carousel-coverflow-rotate-near));
+  translate: calc(var(--ci-carousel-coverflow-translate-near) * -1);
+  scale: var(--ci-carousel-coverflow-scale-near);
   opacity: var(--ci-carousel-coverflow-opacity-near);
   filter: var(--ci-carousel-coverflow-filter-near);
   z-index: 4;
@@ -399,8 +494,8 @@
 }
 
 .coverflow.coverflow-next {
-  transform: translateX(var(--ci-carousel-coverflow-translate-near)) scale(var(--ci-carousel-coverflow-scale-near))
-    rotateY(calc(var(--ci-carousel-coverflow-rotate-near) * -1));
+  translate: var(--ci-carousel-coverflow-translate-near);
+  scale: var(--ci-carousel-coverflow-scale-near);
   opacity: var(--ci-carousel-coverflow-opacity-near);
   filter: var(--ci-carousel-coverflow-filter-near);
   z-index: 4;
@@ -409,8 +504,8 @@
 }
 
 .coverflow.coverflow-far-prev {
-  transform: translateX(calc(var(--ci-carousel-coverflow-translate-far) * -1))
-    scale(var(--ci-carousel-coverflow-scale-far)) rotateY(var(--ci-carousel-coverflow-rotate-far));
+  translate: calc(var(--ci-carousel-coverflow-translate-far) * -1);
+  scale: var(--ci-carousel-coverflow-scale-far);
   opacity: var(--ci-carousel-coverflow-opacity-far);
   filter: var(--ci-carousel-coverflow-filter-far);
   z-index: 3;
@@ -419,13 +514,20 @@
 }
 
 .coverflow.coverflow-far-next {
-  transform: translateX(var(--ci-carousel-coverflow-translate-far)) scale(var(--ci-carousel-coverflow-scale-far))
-    rotateY(calc(var(--ci-carousel-coverflow-rotate-far) * -1));
+  translate: var(--ci-carousel-coverflow-translate-far);
+  scale: var(--ci-carousel-coverflow-scale-far);
   opacity: var(--ci-carousel-coverflow-opacity-far);
   filter: var(--ci-carousel-coverflow-filter-far);
   z-index: 3;
   pointer-events: auto;
   cursor: pointer;
+}
+
+/* Slides entering/leaving the 5-slide window snap to position — prevents the dim
+   far slide from drifting toward/from center ("ghost" sliding the opposite way).
+   Applied by JS for one frame, then removed (see applyCoverflowPositions). */
+.coverflow.coverflow-instant {
+  transition: none;
 }
 
 /* Hover on a neighbor lifts the dim/desaturate so the user sees what they're about to click. */
@@ -438,7 +540,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ci-carousel-image-wrapper.coverflow {
+  .ci-carousel-image-wrapper.coverflow,
+  .ci-carousel-image-wrapper.overlap {
     transition: none;
   }
 }
@@ -823,7 +926,46 @@
 }
 
 /* ==========================================================================
-   11. Dark theme — applied via .ci-carousel-theme-dark class
+   11. Transparent background — applied via .ci-carousel-transparent class.
+   Makes the viewer area AND the bullets/thumbnails panels see-through so the
+   host page shows through behind the carousel chrome. Combinable with either
+   theme. The compound selector (.ci-carousel.ci-carousel-transparent) raises
+   specificity above the single-class dark-theme block below, so these win
+   regardless of source order.
+
+   Accessibility (WCAG 2.1 AA): the host background is unknown, so panel chrome
+   cannot rely on a fixed backdrop for contrast. The indicators below use a
+   self-contrasting dual halo (light inner ring + dark outer shadow) so each
+   bullet and the active thumbnail keep >=3:1 non-text contrast (1.4.11) against
+   any backdrop, light or dark. Control buttons keep their own semi-opaque
+   backdrop, so their icons retain contrast (1.4.3 / 1.4.11) and are left as-is.
+   ========================================================================== */
+
+.ci-carousel.ci-carousel-transparent {
+  --ci-carousel-bg: transparent;
+  --ci-carousel-bullets-bg: transparent;
+  --ci-carousel-thumbnails-bg: transparent;
+  --ci-carousel-thumbnails-border: none;
+  /* Active thumbnail ring: white inner + dark outer reads on any backdrop */
+  --ci-carousel-thumbnail-active-border: 0 0 0 2px #ffffff, 0 0 0 4px rgba(0, 0, 0, 0.55);
+}
+
+/* Bullets: dual halo keeps each dot distinguishable over arbitrary content */
+.ci-carousel-transparent .ci-carousel-bullet {
+  box-shadow:
+    0 0 0 1.5px rgba(255, 255, 255, 0.9),
+    0 1px 4px rgba(0, 0, 0, 0.55);
+}
+
+/* Non-active thumbnails: subtle ring so the tile edge stays discernible */
+.ci-carousel-transparent .ci-carousel-thumbnail:not(.active) {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+/* ==========================================================================
+   11b. Dark theme — applied via .ci-carousel-theme-dark class
    ========================================================================== */
 
 .ci-carousel-theme-dark {

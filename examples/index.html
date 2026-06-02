@@ -101,6 +101,20 @@ carousel.init()</code></pre>
 
     <div id="carousel-coverflow"></div>
 
+    <!-- ================================================================
+         Example 4: Overlap (cover) transition — drag to navigate
+         ================================================================ -->
+    <h2>4. Overlap transition (drag to navigate)</h2>
+    <pre><code>new CloudImageCarousel('#carousel-overlap', {
+  images: [...],
+  transitionEffect: 'overlap', // incoming image slides OVER the current one
+  cycle: true,
+  showBullets: true,
+})</code></pre>
+    <p class="subtitle">Drag the image left/right (mouse or touch) — the next/prev image rides over the current one and snaps on release.</p>
+
+    <div id="carousel-overlap"></div>
+
     <script src="/dist/carousel.min.js"></script>
     <script>
       // Method 1: JavaScript API
@@ -155,6 +169,24 @@ carousel.init()</code></pre>
         ],
       })
       carouselCoverflow.init()
+
+      // Method 4: Overlap (cover) transition — incoming image rides over the current
+      // one; drag left/right (mouse or touch) to navigate with live feedback.
+      const carouselOverlap = new CloudImageCarousel('#carousel-overlap', {
+        transitionEffect: 'overlap',
+        cycle: true,
+        showBullets: true,
+        showThumbnails: true,
+        showControls: true,
+        images: [
+          'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/hotel.jpg',
+          'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/birds.jpg',
+          'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/perfume.jpg',
+          'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/mountains.jpg',
+          'https://demo.cloudimg.io/v7/https://samples.scaleflex.com/house.jpg',
+        ],
+      })
+      carouselOverlap.init()
     </script>
   </body>
 </html>

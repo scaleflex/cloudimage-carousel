@@ -3,7 +3,7 @@
 // ==========================================================================
 
 /** Transition effect for slide changes */
-export type TransitionEffect = 'slide' | 'fade' | 'zoom' | 'flip'
+export type TransitionEffect = 'slide' | 'fade' | 'zoom' | 'flip' | 'overlap'
 
 /** Navigation arrow placement */
 export type ControlsPosition = 'center' | 'bottom'
@@ -72,6 +72,8 @@ export interface CloudImageCarouselConfig {
   controlsPosition?: ControlsPosition
   /** Color theme */
   theme?: Theme
+  /** Make the viewer area background transparent (combinable with any theme) */
+  transparentBackground?: boolean
   /** Slide transition effect */
   transitionEffect?: TransitionEffect
   /** Coverflow layout — show 2 neighbor slides on each side of the active one (openbook style). Overrides transitionEffect when true. */

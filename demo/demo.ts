@@ -135,6 +135,18 @@ new CloudImageCarousel('#transition-flip', {
 }).init()
 
 // ==========================================================================
+// Transition: overlap (cover) — drag to navigate
+// ==========================================================================
+
+new CloudImageCarousel('#transition-overlap', {
+  images: DEMO_IMAGES,
+  transitionEffect: 'overlap',
+  cycle: true,
+  showThumbnails: false,
+  showBullets: true,
+}).init()
+
+// ==========================================================================
 // Zoom: default config
 // ==========================================================================
 

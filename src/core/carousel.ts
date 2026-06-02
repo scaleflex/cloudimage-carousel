@@ -16,6 +16,7 @@ import {
   CI_CAROUSEL_COVERFLOW_CLASS,
   CI_CAROUSEL_COVERFLOW_FAR_NEXT_CLASS,
   CI_CAROUSEL_COVERFLOW_FAR_PREV_CLASS,
+  CI_CAROUSEL_COVERFLOW_INSTANT_CLASS,
   CI_CAROUSEL_COVERFLOW_NEXT_CLASS,
   CI_CAROUSEL_COVERFLOW_PREV_CLASS,
   CI_CAROUSEL_FILENAME_CLASS,
@@ -32,6 +33,7 @@ import {
   CI_CAROUSEL_MAIN_CLASS,
   CI_CAROUSEL_THEME_DARK_CLASS,
   CI_CAROUSEL_THUMBNAILS_CLASS,
+  CI_CAROUSEL_TRANSPARENT_CLASS,
   CI_CAROUSEL_THUMBNAIL_CLASS,
   CI_HOST_CONTAINER_CLASS,
   EXITING_CLASS,
@@ -730,6 +732,13 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
    * Neighbor depth is clamped to floor((N-1)/2) so each slide gets at most one class
    * when there are fewer than 5 images.
    */
+  /**
+   * Slide indices that were inside the visible window on the previous call.
+   * Used to suppress the transition for slides entering/leaving the window so
+   * dim far slides don't drift toward/from center ("ghost" sliding).
+   */
+  private coverflowPrevVisible = new Set<number>()
+
   private applyCoverflowPositions(): void {
     if (!this.imagesContainer) return
 
@@ -755,10 +764,22 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
       }
     }
 
+    // Slides whose visibility flips this call (entering or leaving the window)
+    // snap to position instead of sliding — see coverflowPrevVisible.
+    const instantSlides: HTMLElement[] = []
+
     slides.forEach((slide, index) => {
       slide.classList.remove(...CloudImageCarousel.COVERFLOW_POSITION_CLASSES)
 
       const offset = offsetByIndex.get(index)
+
+      const wasVisible = this.coverflowPrevVisible.has(index)
+      const isVisible = offset !== undefined
+      if (wasVisible !== isVisible) {
+        slide.classList.add(CI_CAROUSEL_COVERFLOW_INSTANT_CLASS)
+        instantSlides.push(slide)
+      }
+
       let className: string | null = null
       switch (offset) {
         case 0:
@@ -790,6 +811,15 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
         slide.setAttribute('inert', '')
       }
     })
+
+    // Commit the snapped positions, then re-enable transitions so subsequent
+    // navigations animate these slides normally.
+    if (instantSlides.length) {
+      void this.imagesContainer.offsetHeight
+      instantSlides.forEach((slide) => slide.classList.remove(CI_CAROUSEL_COVERFLOW_INSTANT_CLASS))
+    }
+
+    this.coverflowPrevVisible = new Set(offsetByIndex.keys())
   }
 
   private coverflowClickHandler: ((e: Event) => void) | null = null
@@ -844,15 +874,17 @@ class CloudImageCarousel implements CloudImageCarouselInstance {
 
   applyTheme(): void {
     if (!this.container) return
-    if (this.options.theme === 'dark') {
-      this.container.classList.add(CI_CAROUSEL_THEME_DARK_CLASS)
-    } else {
-      this.container.classList.remove(CI_CAROUSEL_THEME_DARK_CLASS)
-    }
+    this.container.classList.toggle(CI_CAROUSEL_THEME_DARK_CLASS, this.options.theme === 'dark')
+    this.container.classList.toggle(CI_CAROUSEL_TRANSPARENT_CLASS, !!this.options.transparentBackground)
   }
 
   setTheme(theme: Theme): void {
     this.options.theme = theme
+    this.applyTheme()
+  }
+
+  setTransparentBackground(transparent: boolean): void {
+    this.options.transparentBackground = transparent
     this.applyTheme()
   }
 

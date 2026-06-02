@@ -3,4 +3,5 @@ export const TRANSITION_EFFECTS = {
   FADE: 'fade',
   ZOOM: 'zoom',
   FLIP: 'flip',
+  OVERLAP: 'overlap',
 } as const

@@ -15,6 +15,10 @@ export const CI_CAROUSEL_AUTOPLAY_CLASS = 'ci-carousel-autoplay' as const
 export const CI_CAROUSEL_SCROLL_HINT_CLASS = 'ci-carousel-scroll-hint' as const
 export const CI_CAROUSEL_SCROLL_HINT_VISIBLE_CLASS = 'ci-carousel-scroll-hint--visible' as const
 export const CI_CAROUSEL_DRAGGING_CLASS = 'ci-carousel-dragging' as const
+/** Container drag state during an overlap swipe (distinct from the zoom-pan wrapper-level dragging class). */
+export const CI_CAROUSEL_SWIPING_CLASS = 'ci-carousel-swiping' as const
+/** Applied to the incoming slide while it is being dragged in (makes the otherwise-hidden wrapper paintable). */
+export const CI_CAROUSEL_DRAG_INCOMING_CLASS = 'drag-incoming' as const
 
 // Controls classes
 export const CI_CAROUSEL_PREV_CLASS = 'ci-carousel-prev' as const
@@ -35,6 +39,7 @@ export const CI_CAROUSEL_COVERFLOW_PREV_CLASS = 'coverflow-prev' as const
 export const CI_CAROUSEL_COVERFLOW_NEXT_CLASS = 'coverflow-next' as const
 export const CI_CAROUSEL_COVERFLOW_FAR_PREV_CLASS = 'coverflow-far-prev' as const
 export const CI_CAROUSEL_COVERFLOW_FAR_NEXT_CLASS = 'coverflow-far-next' as const
+export const CI_CAROUSEL_COVERFLOW_INSTANT_CLASS = 'coverflow-instant' as const
 export const CI_CAROUSEL_HAS_COVERFLOW_CLASS = 'ci-carousel-has-coverflow' as const
 
 // Modifier classes
@@ -42,5 +47,6 @@ export const CI_CAROUSEL_HAS_CONTROLS_CLASS = 'ci-carousel-has-controls' as cons
 export const CI_CAROUSEL_HAS_THUMBNAILS_CLASS = 'ci-carousel-has-thumbnails' as const
 export const CI_CAROUSEL_HAS_BULLETS_CLASS = 'ci-carousel-has-bullets' as const
 export const CI_CAROUSEL_THEME_DARK_CLASS = 'ci-carousel-theme-dark' as const
+export const CI_CAROUSEL_TRANSPARENT_CLASS = 'ci-carousel-transparent' as const
 export const CI_CAROUSEL_IMAGE_ERROR_CLASS = 'ci-carousel-image-error' as const
 export const CI_CAROUSEL_IS_FULLSCREEN_CLASS = 'is-fullscreen' as const

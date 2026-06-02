@@ -24,6 +24,7 @@ export interface ResolvedConfig {
   showControls: boolean
   controlsPosition: ControlsPosition
   theme: Theme
+  transparentBackground: boolean
   transitionEffect: TransitionEffect
   showCoverflow: boolean
   aspectRatio: string
@@ -50,6 +51,7 @@ const DEFAULT_CONFIG: ResolvedConfig = {
   showControls: true,
   controlsPosition: 'center',
   theme: 'light',
+  transparentBackground: false,
   transitionEffect: TRANSITION_EFFECTS.FADE as TransitionEffect,
   showCoverflow: false,
   aspectRatio: '16/9',
@@ -81,6 +83,7 @@ const DATA_ATTR_MAP: Record<string, DataAttrMapping> = {
   'data-ci-carousel-show-controls': { key: 'showControls', type: 'boolean' },
   'data-ci-carousel-controls-position': { key: 'controlsPosition', type: 'string' },
   'data-ci-carousel-theme': { key: 'theme', type: 'string' },
+  'data-ci-carousel-transparent-background': { key: 'transparentBackground', type: 'boolean' },
   'data-ci-carousel-transition': { key: 'transitionEffect', type: 'string' },
   'data-ci-carousel-show-coverflow': { key: 'showCoverflow', type: 'boolean' },
   'data-ci-carousel-aspect-ratio': { key: 'aspectRatio', type: 'string' },

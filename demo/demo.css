@@ -799,6 +799,19 @@ p code {
   border-radius: var(--demo-radius-sm);
 }
 
+/* Checkerboard backdrop — only shown while the transparent-background option is
+   on, so the see-through effect is obvious in the preview. */
+#configurator-carousel.is-transparent-preview {
+  background-image:
+    linear-gradient(45deg, rgba(0, 0, 0, 0.08) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.08) 75%),
+    linear-gradient(45deg, rgba(0, 0, 0, 0.08) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.08) 75%);
+  background-size: 24px 24px;
+  background-position:
+    0 0,
+    12px 12px;
+  border-radius: 16px;
+}
+
 .demo-configurator-panel {
   display: flex;
   flex-direction: column;
