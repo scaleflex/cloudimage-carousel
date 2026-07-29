@@ -321,7 +321,7 @@ carousel.<span class="fn">init</span>()</code>
         <div class="demo-section-header">
           <div class="demo-section-label">Effects</div>
           <h2>Transitions</h2>
-          <p>Four built-in effects with configurable easing and duration via CSS variables.</p>
+          <p>Five built-in effects with configurable easing and duration via CSS variables.</p>
         </div>
         <div class="demo-grid-2">
           <div class="demo-card">
@@ -358,6 +358,15 @@ carousel.<span class="fn">init</span>()</code>
             </div>
             <div class="demo-card-body">
               <div class="demo-viewer"><div id="transition-flip"></div></div>
+            </div>
+          </div>
+          <div class="demo-card">
+            <div class="demo-card-header">
+              <h3>Overlap (drag)</h3>
+              <p><code>transitionEffect: 'overlap'</code> — drag the image to navigate</p>
+            </div>
+            <div class="demo-card-body">
+              <div class="demo-viewer"><div id="transition-overlap"></div></div>
             </div>
           </div>
         </div>
@@ -456,6 +465,10 @@ carousel.<span class="fn">init</span>()</code>
                 <input type="checkbox" id="cfg-coverflow" />
                 <span class="demo-toggle-label">Coverflow</span>
               </label>
+              <label class="demo-toggle">
+                <input type="checkbox" id="cfg-transparent-bg" />
+                <span class="demo-toggle-label">Transparent background</span>
+              </label>
             </div>
             <div class="demo-configurator-controls" style="margin-top: 8px">
               <label class="demo-select-label">
@@ -472,6 +485,7 @@ carousel.<span class="fn">init</span>()</code>
                   <option value="slide">slide</option>
                   <option value="zoom">zoom</option>
                   <option value="flip">flip</option>
+                  <option value="overlap">overlap</option>
                 </select>
               </label>
               <label class="demo-select-label">

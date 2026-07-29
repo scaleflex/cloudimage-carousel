@@ -23,6 +23,7 @@ export function initConfigurator(): void {
   const cfgAutoplay = document.getElementById('cfg-autoplay') as HTMLInputElement
   const cfgCycle = document.getElementById('cfg-cycle') as HTMLInputElement
   const cfgCoverflow = document.getElementById('cfg-coverflow') as HTMLInputElement
+  const cfgTransparentBg = document.getElementById('cfg-transparent-bg') as HTMLInputElement
   const cfgTheme = document.getElementById('cfg-theme') as HTMLSelectElement
   const cfgTransition = document.getElementById('cfg-transition') as HTMLSelectElement
   const cfgControlsPosition = document.getElementById('cfg-controls-position') as HTMLSelectElement
@@ -42,8 +43,9 @@ export function initConfigurator(): void {
       autoplay: cfgAutoplay.checked,
       cycle: cfgCycle.checked,
       showCoverflow: cfgCoverflow.checked,
+      transparentBackground: cfgTransparentBg.checked,
       theme: cfgTheme.value as 'light' | 'dark',
-      transitionEffect: cfgTransition.value as 'fade' | 'slide' | 'zoom' | 'flip',
+      transitionEffect: cfgTransition.value as 'fade' | 'slide' | 'zoom' | 'flip' | 'overlap',
       controlsPosition: cfgControlsPosition.value as 'center' | 'bottom',
       zoomMin: parseFloat(cfgZoomMin.value),
       zoomMax: parseFloat(cfgZoomMax.value),
@@ -61,6 +63,7 @@ export function initConfigurator(): void {
     if (config.autoplay) opts.push(`  autoplay: true,`)
     if (!config.cycle) opts.push(`  cycle: false,`)
     if (config.showCoverflow) opts.push(`  showCoverflow: true,`)
+    if (config.transparentBackground) opts.push(`  transparentBackground: true,`)
     if (config.theme !== 'light') opts.push(`  theme: '${config.theme}',`)
     if (config.transitionEffect !== 'fade') opts.push(`  transitionEffect: '${config.transitionEffect}',`)
     if (config.controlsPosition !== 'center') opts.push(`  controlsPosition: '${config.controlsPosition}',`)
@@ -77,6 +80,9 @@ export function initConfigurator(): void {
     // Controls position only relevant when controls are visible
     const posLabel = cfgControlsPosition.closest('label') as HTMLElement
     posLabel.style.display = cfgControls.checked ? '' : 'none'
+
+    // Reveal a checkerboard behind the carousel so transparency is visible
+    viewerEl!.classList.toggle('is-transparent-preview', config.transparentBackground === true)
 
     // Destroy and recreate (carousel doesn't have an update() method)
     if (instance) {
@@ -105,8 +111,8 @@ export function initConfigurator(): void {
   }
 
   // Bind all controls to rebuild
-  ;[cfgThumbnails, cfgBullets, cfgControls, cfgFilenames, cfgAutoplay, cfgCycle, cfgCoverflow].forEach((el) =>
-    el.addEventListener('change', rebuild),
+  ;[cfgThumbnails, cfgBullets, cfgControls, cfgFilenames, cfgAutoplay, cfgCycle, cfgCoverflow, cfgTransparentBg].forEach(
+    (el) => el.addEventListener('change', rebuild),
   )
   ;[cfgTheme, cfgTransition, cfgControlsPosition].forEach((el) => el.addEventListener('change', rebuild))
   ;[cfgZoomMin, cfgZoomMax, cfgZoomStep].forEach((el) => el.addEventListener('change', rebuild))
